@@ -1,4 +1,5 @@
 import 'package:english_app_with_ai/pages/login_page.dart';
+import 'package:english_app_with_ai/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'components/navigation_menu.dart';
@@ -14,8 +15,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Flutter Demo',
+    return GetMaterialApp(
+        title: 'Echo Nexus',
         theme: ThemeData(
           // This is the theme of your application.
           //
@@ -33,8 +34,9 @@ class MyApp extends StatelessWidget {
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
-        home: const NavigationMenu(),
+        home: const SplashScreen(),
     );
   }
 }

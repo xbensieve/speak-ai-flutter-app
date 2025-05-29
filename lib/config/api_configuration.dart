@@ -1,4 +1,4 @@
-class BaseUrlConfig {
-  final String baseUrlDevelopment = "";
-  final String baseUrlProduction = "http://sai.runasp.net/";
+class ApiConfig {
+  static const String baseUrl = 'http://sai.runasp.net';
+  static const String loginEndpoint = '/api/auth/login';
 }

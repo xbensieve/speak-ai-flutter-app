@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:english_app_with_ai/pages/login_page.dart';
 import 'package:english_app_with_ai/components/navigation_menu.dart';
 
+import '../view_models/login_view_model.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -12,7 +14,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -28,14 +31,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     // Initialize Fade Animation
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     // Initialize Scale Animation
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     // Start the animation
     _controller.forward();
@@ -51,18 +56,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkAuthentication() async {
+    final loginViewModel = Get.put(LoginViewModel());
     await Future.delayed(const Duration(seconds: 3));
-    bool hasAccessToken = await _mockCheckAccessToken();
-
-    // if (hasAccessToken) {
-    //   Get.off(() => const NavigationMenu());
-    // } else {
-    //   Get.off(() => LoginPage());
-    // }
-  }
-
-  Future<bool> _mockCheckAccessToken() async {
-    return true; // Set to true to test NavigationMenu
+    String? accessToken = await loginViewModel.getAccessToken();
+    if (accessToken != null && accessToken.isNotEmpty) {
+      debugPrint('Access token found. Navigating to NavigationMenu.');
+      Get.off(() => const NavigationMenu());
+    } else {
+      debugPrint('No access token found. Navigating to LoginPage.');
+      Get.off(() => LoginPage());
+    }
   }
 
   @override

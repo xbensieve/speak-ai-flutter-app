@@ -1,9 +1,9 @@
-import 'package:english_app_with_ai/components/navigation_menu.dart';
-import 'package:english_app_with_ai/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:get/get.dart';
-import 'package:video_player/video_player.dart';
+import 'package:english_app_with_ai/pages/login_page.dart';
+import 'package:english_app_with_ai/components/navigation_menu.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,107 +12,106 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _videoController;
-  bool _isVideoInitialized = false;
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
+
+    // Initialize AnimationController
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2), // Animation duration
+    );
+
+    // Initialize Fade Animation
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    // Initialize Scale Animation
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    // Start the animation
+    _controller.forward();
+
+    // Call authentication check
     _checkAuthentication();
-  }
-
-  void _initializeVideo() {
-    _videoController = VideoPlayerController.asset('lib/assets/splash_video.mp4')
-      ..initialize().then((_) {
-        if (mounted) {
-          setState(() {
-            _isVideoInitialized = true;
-          });
-          _videoController.setLooping(true);
-          _videoController.play();
-          debugPrint('Video initialized and playing');
-        }
-      }).catchError((error) {
-        debugPrint('Error initializing video: $error');
-        if (mounted) {
-          setState(() {
-            _isVideoInitialized = false;
-          });
-        }
-      });
-  }
-
-  Future<void> _checkAuthentication() async {
-    try {
-      await Future.delayed(const Duration(seconds: 15));
-      bool hasAccessToken = await _mockCheckAccessToken();
-      debugPrint('Access token check result: $hasAccessToken');
-
-      if (hasAccessToken) {
-        debugPrint('Navigating to NavigationMenu');
-        Get.off(() => const NavigationMenu());
-      } else {
-        debugPrint('Navigating to LoginPage');
-        Get.off(() => LoginPage());
-      }
-    } catch (e) {
-      debugPrint('Error in _checkAuthentication: $e');
-    }
-  }
-
-  Future<bool> _mockCheckAccessToken() async {
-    return false; // Set to true to test NavigationMenu
   }
 
   @override
   void dispose() {
-    _videoController.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkAuthentication() async {
+    await Future.delayed(const Duration(seconds: 3));
+    bool hasAccessToken = await _mockCheckAccessToken();
+
+    // if (hasAccessToken) {
+    //   Get.off(() => const NavigationMenu());
+    // } else {
+    //   Get.off(() => LoginPage());
+    // }
+  }
+
+  Future<bool> _mockCheckAccessToken() async {
+    return true; // Set to true to test NavigationMenu
   }
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double logoWidth = screenWidth * 0.4;
+    final double logoHeight = screenHeight * 0.2;
+
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _isVideoInitialized
-                ? FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: _videoController.value.size.width,
-                height: _videoController.value.size.height,
-                child: VideoPlayer(_videoController),
-              ),
-            )
-                : Image.asset(
-              'assets/images/google_logo.webp',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 20),
-                  const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color.fromRGBO(74, 144, 226, 1), // Sky Blue
+      body: Container(
+        color: const Color(0xFF1e3a8a),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Container(
+                    width: logoWidth + 20,
+                    height: logoHeight + 20,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.asset(
+                      'lib/assets/images/EchoNexus.png',
+                      fit: BoxFit.contain,
+                      width: logoWidth,
+                      height: logoHeight,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: Text(
+                  'Echo Nexus',
+                  style: GoogleFonts.dancingScript(
+                    fontSize: 48,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

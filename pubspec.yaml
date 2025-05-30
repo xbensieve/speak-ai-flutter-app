@@ -44,6 +44,7 @@ dependencies:
   animate_do: ^3.3.4
   flutter_secure_storage: ^9.2.2
   jwt_decoder: ^2.0.1
+  signalr_netcore: ^1.4.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

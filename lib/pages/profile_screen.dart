@@ -41,17 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
-          ),
-        ),
         child: SafeArea(
           child: Column(
             children: [
-              _buildAppBar(),
               Expanded(
                 child: Obx(() {
                   if (userViewModel.isLoading.value) {
@@ -88,49 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Profile',
-            style: GoogleFonts.inter(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              Get.defaultDialog(
-                title: 'Logout',
-                titleStyle: GoogleFonts.inter(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                middleText: 'Are you sure you want to logout?',
-                middleTextStyle: GoogleFonts.inter(fontSize: 16),
-                textConfirm: 'Yes',
-                textCancel: 'No',
-                confirmTextColor: Colors.white,
-                buttonColor: Colors.red,
-                cancelTextColor: Colors.black87,
-                onConfirm: () {
-                  loginViewModel.logout();
-                  Get.offAll(() => const LoginPage());
-                },
-                onCancel: () => Get.back(),
-              );
-            },
-          ),
-        ],
       ),
     );
   }

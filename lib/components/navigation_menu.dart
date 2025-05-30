@@ -1,9 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:english_app_with_ai/pages/home_screen.dart';
 import 'package:english_app_with_ai/pages/profile_screen.dart';
 import 'package:english_app_with_ai/pages/tutor_screen.dart';
 import 'package:english_app_with_ai/pages/learn_screen.dart';
+
+import 'header.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -17,7 +21,37 @@ class NavigationMenu extends StatelessWidget {
     const labels = ['Home', 'Learn', 'AI Tutor', 'Profile'];
 
     return Scaffold(
-      body: Obx(() => controller.screens[controller.selectedIndex.value]),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("lib/assets/images/background.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 10.0,
+              sigmaY: 10.0,
+            ), // Existing blur
+            child: Container(
+              color: Colors.transparent, // Required for BackdropFilter
+            ),
+          ),
+          Obx(
+            () => Column(
+              children: [
+                const HeaderWidget(),
+                Expanded(
+                  child: controller.screens[controller.selectedIndex.value],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: Obx(() {
         // Determine active/inactive state for each label
         final currentIndex = controller.selectedIndex.value;
@@ -31,7 +65,8 @@ class NavigationMenu extends StatelessWidget {
         return NavigationBar(
           height: 80,
           elevation: 8,
-          backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          backgroundColor:
+              Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           selectedIndex: currentIndex,
           onDestinationSelected: (index) {
             controller.onDestinationSelected(index);

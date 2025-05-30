@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/login_request.dart';
-import '../services/api_service.dart';
+import '../services/abstract/i_api_service.dart';
+import '../services/implement/api_service.dart';
 
 class LoginViewModel extends GetxController {
-  final ApiService _apiService = ApiService();
+  IApiService apiService = ApiService();
   final storage = GetStorage();
   var isLoading = false.obs;
 
@@ -14,7 +15,7 @@ class LoginViewModel extends GetxController {
     try {
       isLoading.value = true;
       final request = LoginRequest(userName: username, password: password);
-      final response = await ApiService.login(request);
+      final response = await apiService.login(request);
 
       if (response.isSuccess && response.result != null) {
         // Store tokens securely
@@ -85,5 +86,10 @@ class LoginViewModel extends GetxController {
 
   String? getRefreshToken() {
     return storage.read('refreshToken');
+  }
+
+  void logout() {
+    storage.remove('accessToken');
+    storage.remove('refreshToken');
   }
 }

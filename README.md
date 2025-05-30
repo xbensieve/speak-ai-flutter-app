@@ -10,7 +10,7 @@ Echo Nexus is a Flutter application designed to help users improve their English
 - **Modern UI**: Custom splash screen, animated transitions, and Google Fonts.
 - **State Management**: Uses [GetX](https://pub.dev/packages/get) for efficient state and navigation.
 - **Persistent Storage**: Uses [get_storage](https://pub.dev/packages/get_storage) for local data.
-- **API Integration**: Connects to backend for authentication ([`ApiService`](lib/services/api_service.dart)).
+- **API Integration**: Connects to backend for authentication ([`ApiService`](lib/services/implement/api_service.dart)).
 - **Extensible**: Easily add new screens and features.
 
 ## Getting Started

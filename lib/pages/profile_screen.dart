@@ -37,179 +37,202 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _logout() {
+    Get.defaultDialog(
+      title: 'Log Out',
+      titleStyle: GoogleFonts.inter(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      middleText: 'Are you sure you want to log out?',
+      middleTextStyle: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
+      textConfirm: 'Yes',
+      textCancel: 'No',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      cancelTextColor: Colors.white70,
+      backgroundColor: Colors.grey[900],
+      onConfirm: () {
+        loginViewModel.logout();
+        Get.offAll(() => const LoginPage());
+      },
+      onCancel: () => Get.back(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Obx(() {
-                  if (userViewModel.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (userViewModel.user.value != null) {
-                    final user = userViewModel.user.value!;
-                    return RefreshIndicator(
-                      onRefresh: () async => _loadUser(),
-                      child: ListView(
-                        padding: const EdgeInsets.all(16),
-                        children: [
-                          _buildProfileHeader(user),
-                          const SizedBox(height: 24),
-                          _buildInfoCard(user),
-                          const SizedBox(height: 24),
-                          _buildUpgradeButton(),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return Center(
-                      child: Text(
-                        "No user info available",
-                        style: GoogleFonts.inter(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    );
-                  }
-                }),
-              ),
-            ],
-          ),
+          child: Obx(() {
+            if (userViewModel.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (userViewModel.user.value != null) {
+              final user = userViewModel.user.value!;
+              return RefreshIndicator(
+                onRefresh: () async => _loadUser(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      children: [
+                        _buildHeader(user),
+                        const SizedBox(height: 16),
+                        _buildOptionsList(),
+                        const SizedBox(height: 16),
+                        if (user.premiumExpiredTime == null)
+                          _buildGetAccountProButton(),
+                        const SizedBox(
+                          height: 24,
+                        ), // Extra padding at the bottom
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "No user info available",
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }
+          }),
         ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(user) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildHeader(user) {
+    final now = DateTime(2025, 5, 31);
+    final daysRemaining =
+        user.premiumExpiredTime != null
+            ? user.premiumExpiredTime.difference(now).inDays
+            : null;
+    return Column(
+      children: [
+        Text(
+          'YOUR PROFILE',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Text(
-              user.fullName[0].toUpperCase(),
-              style: GoogleFonts.inter(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF007BFF),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            user.fullName,
-            style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(user) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoRow('Username', user.userName),
-            _buildDivider(),
-            _buildInfoRow('Verified', user.isVerified ? 'Yes' : 'No'),
-            _buildDivider(),
-            _buildInfoRow('Premium', user.isPremium ? 'Yes' : 'No'),
-            _buildDivider(),
-            _buildInfoRow('Points', user.point.toString()),
-            _buildDivider(),
-            _buildInfoRow('Level', user.levelName),
-            _buildDivider(),
-            _buildInfoRow('Birthday', user.birthday.toString().split(' ')[0]),
-            _buildDivider(),
-            _buildInfoRow('Gender', user.gender),
-            if (user.premiumExpiredTime != null) ...[
-              _buildDivider(),
-              _buildInfoRow(
-                'Premium Expires',
-                user.premiumExpiredTime.toString().split(' ')[0],
-              ),
-            ],
-          ],
         ),
-      ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withOpacity(0.2),
+            border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+          ),
+          child: const Icon(Icons.star, size: 50, color: Colors.white),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          user.userName,
+          style: GoogleFonts.inter(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          daysRemaining != null
+              ? 'Account: $daysRemaining Days Remaining'
+              : 'Account: Not Premium',
+          style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
+        ),
+      ],
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.black54),
-          ),
-        ],
-      ),
+  Widget _buildOptionsList() {
+    final options = [
+      'Edit your profile',
+      'Learning & Sound settings',
+      'Feedback & Sharing',
+      'Notifications',
+      'Terms',
+      'Policy',
+      'Log out',
+    ];
+
+    return Column(
+      children:
+          options.asMap().entries.map((entry) {
+            final index = entry.key;
+            final option = entry.value;
+            final isLogout = option == 'Log out';
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Container(
+                child: ListTile(
+                  title: Text(
+                    option,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: isLogout ? Colors.red : Colors.white,
+                      fontWeight:
+                          isLogout ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: isLogout ? Colors.red : Colors.white70,
+                  ),
+                  onTap: () {
+                    if (isLogout) {
+                      _logout();
+                    } else {
+                      Get.snackbar(
+                        'Tapped',
+                        'Selected $option',
+                        backgroundColor: Colors.grey[800],
+                        colorText: Colors.white,
+                      );
+                    }
+                  },
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 
-  Widget _buildDivider() {
-    return Divider(color: Colors.grey.shade200, height: 1, thickness: 1);
-  }
-
-  Widget _buildUpgradeButton() {
+  Widget _buildGetAccountProButton() {
     return ElevatedButton(
       onPressed: () {
         Get.defaultDialog(
           title: 'Upgrade Account',
           titleStyle: GoogleFonts.inter(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
           middleText: 'Proceed to upgrade your account via VNPay?',
-          middleTextStyle: GoogleFonts.inter(fontSize: 16),
+          middleTextStyle: GoogleFonts.inter(
+            fontSize: 16,
+            color: Colors.white70,
+          ),
           textConfirm: 'Yes',
           textCancel: 'No',
           confirmTextColor: Colors.white,
           buttonColor: Colors.green,
-          cancelTextColor: Colors.black87,
+          cancelTextColor: Colors.white70,
+          backgroundColor: Colors.grey[900],
           onConfirm: () {
             _launchUrl();
             Get.back();
@@ -224,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 2,
       ),
       child: Text(
-        'Upgrade to Premium',
+        'Get Account Pro',
         style: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w600,

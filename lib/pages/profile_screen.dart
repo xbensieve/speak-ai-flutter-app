@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:english_app_with_ai/pages/login_page.dart';
@@ -63,52 +64,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SafeArea(
-          child: Obx(() {
-            if (userViewModel.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (userViewModel.user.value != null) {
-              final user = userViewModel.user.value!;
-              return RefreshIndicator(
-                onRefresh: () async => _loadUser(),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Column(
-                      children: [
-                        _buildHeader(user),
-                        const SizedBox(height: 16),
-                        _buildOptionsList(),
-                        const SizedBox(height: 16),
-                        if (user.premiumExpiredTime == null)
-                          _buildGetAccountProButton(),
-                        const SizedBox(
-                          height: 24,
-                        ), // Extra padding at the bottom
-                      ],
-                    ),
+      body: SafeArea(
+        child: Obx(() {
+          if (userViewModel.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (userViewModel.user.value != null) {
+            final user = userViewModel.user.value!;
+            return RefreshIndicator(
+              onRefresh: () async => _loadUser(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Column(
+                    children: [
+                      _buildHeader(user),
+                      const SizedBox(height: 16),
+                      _buildOptionsList(),
+                      const SizedBox(height: 16),
+                      if (user.premiumExpiredTime == null)
+                        _buildGetAccountProButton(),
+                      const SizedBox(height: 24), // Extra padding at the bottom
+                    ],
                   ),
                 ),
-              );
-            } else {
-              return Center(
-                child: Text(
-                  "No user info available",
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                "No user info available",
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
                 ),
-              );
-            }
-          }),
-        ),
+              ),
+            );
+          }
+        }),
       ),
     );
   }

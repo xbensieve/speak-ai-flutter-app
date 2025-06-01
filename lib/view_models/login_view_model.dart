@@ -18,65 +18,33 @@ class LoginViewModel extends GetxController {
       final response = await apiService.login(request);
 
       if (response.isSuccess && response.result != null) {
-        // Store tokens securely
         await storage.write('accessToken', response.result!.accessToken);
         await storage.write('refreshToken', response.result!.refreshToken);
-        debugPrint(
-          'Sign-in successful! Token: ${response.result!.accessToken}',
-        );
         return true;
       } else {
-        Get.snackbar(
-          'Error',
-          '',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          snackStyle: SnackStyle.FLOATING,
-          margin: EdgeInsets.all(16),
-          borderRadius: 12,
-          animationDuration: Duration(milliseconds: 700),
-          forwardAnimationCurve: Curves.easeInOut,
-          reverseAnimationCurve: Curves.easeInOut,
-          messageText: Text(
-            'Invalid username or password',
-            style: GoogleFonts.roboto(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-          icon: Icon(Icons.error_outline, color: Colors.white),
-        );
         return false;
       }
     } catch (e) {
       debugPrint('Sign-in error: $e');
-      Get.snackbar(
-        'Error',
-        '',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackStyle: SnackStyle.FLOATING,
-        margin: EdgeInsets.all(16),
-        borderRadius: 12,
-        animationDuration: Duration(milliseconds: 700),
-        forwardAnimationCurve: Curves.easeInOut,
-        reverseAnimationCurve: Curves.easeInOut,
-        messageText: Text(
-          'Please fill in both username and password',
-          style: GoogleFonts.roboto(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
-        ),
-        icon: Icon(Icons.error_outline, color: Colors.white),
-      );
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<bool> signInWithGoogle(String idToken) async {
+    try {
+      final response = await apiService.loginWithGoolge(idToken);
+      if (response.isSuccess && response.result != null) {
+        await storage.write('accessToken', response.result!.accessToken);
+        await storage.write('refreshToken', response.result!.refreshToken);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Sign-in error: $e');
+      return false;
     }
   }
 

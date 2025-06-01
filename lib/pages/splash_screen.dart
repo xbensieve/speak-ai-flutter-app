@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:get/get.dart';
 import 'package:english_app_with_ai/pages/login_page.dart';
 import 'package:english_app_with_ai/components/navigation_menu.dart';
 
 import '../view_models/login_view_model.dart';
+import '../view_models/user_view_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -57,13 +57,23 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkAuthentication() async {
     final loginViewModel = Get.put(LoginViewModel());
+    final userViewModel = Get.put(UserViewModel());
     await Future.delayed(const Duration(seconds: 3));
-    String? accessToken = await loginViewModel.getAccessToken();
-    if (accessToken != null && accessToken.isNotEmpty) {
-      debugPrint('Access token found. Navigating to NavigationMenu.');
-      Get.off(() => const NavigationMenu());
-    } else {
-      debugPrint('No access token found. Navigating to LoginPage.');
+    String? accessToken = loginViewModel.getAccessToken();
+
+    if (accessToken == null) {
+      Get.off(() => LoginPage());
+    }
+
+    try {
+      var response = userViewModel.user.value;
+      if (response != null) {
+        Get.off(() => const NavigationMenu());
+      } else {
+        Get.off(() => LoginPage());
+      }
+    } catch (e) {
+      debugPrint('Error: ${e.toString()}');
       Get.off(() => LoginPage());
     }
   }

@@ -7,6 +7,7 @@ Map<String, dynamic>? getDecodedAccessToken() {
 
   if (accessToken != null && accessToken is String && accessToken.isNotEmpty) {
     try {
+      print('Decoding token: $accessToken');
       Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
       return decodedToken;
     } catch (e) {

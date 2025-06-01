@@ -53,4 +53,27 @@ class ApiService implements IApiService {
       throw Exception('Get user info error: $e');
     }
   }
+
+  @override
+  Future<LoginResponse> loginWithGoolge(String idToken) async {
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.loginGoogleEndpoint}',
+    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': idToken}),
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponse.fromJson(jsonDecode(response.body));
+      } else {
+        final errorResponse = jsonDecode(response.body);
+        throw Exception(errorResponse['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      throw Exception('Login error: $e');
+    }
+  }
 }

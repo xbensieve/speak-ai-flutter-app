@@ -1,12 +1,21 @@
 import 'package:english_app_with_ai/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'components/navigation_menu.dart';
 
 void main() async {
-  Get.put(NavigationController());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load();
+  } catch (e) {
+    debugPrint("Error loading .env file: $e");
+  }
+
   await GetStorage.init();
+  Get.put(NavigationController());
   runApp(const MyApp());
 }
 
@@ -20,6 +29,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        snackBarTheme: const SnackBarThemeData(
+          contentTextStyle: TextStyle(color: Colors.white),
+        ),
         scaffoldBackgroundColor: Colors.transparent,
         useMaterial3: true,
       ),

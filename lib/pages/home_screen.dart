@@ -16,11 +16,14 @@ class _HomeScreenState extends State<HomeScreen> {
     "Hi, Buddy!",
     "What would you like to achieve today?",
   ];
-
+  static bool _hasSpoken = false;
   @override
   void initState() {
     super.initState();
-    _speakWelcome();
+    if (!_hasSpoken) {
+      _speakWelcome();
+      _hasSpoken = true;
+    }
   }
 
   Future<void> _speakWelcome() async {
@@ -40,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Image.asset(
-                'lib/assets/animations/robot-3d-animation.gif',
-                width: 150,
-                height: 150,
+                'lib/assets/images/bunny-3d.png',
+                width: 300,
+                height: 300,
                 fit: BoxFit.contain,
               ),
               // Chat messages

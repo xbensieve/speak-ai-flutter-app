@@ -63,31 +63,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (accessToken == null) {
       Get.off(() => LoginPage());
-    }
-
-    try {
-      var response = userViewModel.user.value;
-      if (response != null) {
-        Get.off(() => const NavigationMenu());
-      } else {
-        Get.off(() => LoginPage());
-      }
-    } catch (e) {
-      debugPrint('Error: ${e.toString()}');
-      Get.off(() => LoginPage());
+    } else {
+      Get.off(() => const NavigationMenu());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double logoWidth = screenWidth * 0.4;
-    final double logoHeight = screenHeight * 0.2;
-
     return Scaffold(
       body: Container(
-        color: const Color(0xFF1e3a8a),
+        color: Colors.white,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -96,31 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _fadeAnimation,
                 child: ScaleTransition(
                   scale: _scaleAnimation,
-                  child: Container(
-                    width: logoWidth + 20,
-                    height: logoHeight + 20,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset(
-                      'lib/assets/images/EchoNexus.png',
-                      fit: BoxFit.contain,
-                      width: logoWidth,
-                      height: logoHeight,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Text(
-                  'Echo Nexus',
-                  style: GoogleFonts.dancingScript(
-                    fontSize: 48,
-                    color: Colors.white,
-                  ),
+                  child: Image.asset('lib/assets/images/1.png'),
                 ),
               ),
             ],

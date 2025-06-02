@@ -55,7 +55,7 @@ class ApiService implements IApiService {
   }
 
   @override
-  Future<LoginResponse> loginWithGoolge(String idToken) async {
+  Future<LoginResponse> loginWithGoogle(String idToken) async {
     final url = Uri.parse(
       '${ApiConfig.baseUrl}${ApiConfig.loginGoogleEndpoint}',
     );

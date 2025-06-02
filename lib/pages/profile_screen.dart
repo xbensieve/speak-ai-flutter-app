@@ -1,6 +1,7 @@
+import 'package:english_app_with_ai/pages/premium_intro_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:english_app_with_ai/pages/login_page.dart';
@@ -40,19 +41,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() {
     Get.defaultDialog(
-      title: 'Log Out',
-      titleStyle: GoogleFonts.inter(
+      title: 'Confirmation',
+      titleStyle: GoogleFonts.roboto(
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        fontSize: 20,
+        color: Colors.black,
       ),
-      middleText: 'Are you sure you want to log out?',
-      middleTextStyle: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
+      middleText: 'Are you sure? You cannot undo this action.',
+      middleTextStyle: GoogleFonts.roboto(fontSize: 18, color: Colors.black),
       textConfirm: 'Yes',
       textCancel: 'No',
       confirmTextColor: Colors.white,
-      buttonColor: Colors.red,
-      cancelTextColor: Colors.white70,
-      backgroundColor: Colors.grey[900],
+      buttonColor: Colors.blue,
+      cancelTextColor: Colors.black,
+      backgroundColor: Colors.white,
       onConfirm: () {
         loginViewModel.logout();
         Get.offAll(() => const LoginPage());
@@ -67,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Obx(() {
           if (userViewModel.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CupertinoActivityIndicator(radius: 20));
           } else if (userViewModel.user.value != null) {
             final user = userViewModel.user.value!;
             return RefreshIndicator(
@@ -84,10 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildHeader(user),
                       const SizedBox(height: 16),
                       _buildOptionsList(),
-                      const SizedBox(height: 16),
-                      if (user.premiumExpiredTime == null)
-                        _buildGetAccountProButton(),
-                      const SizedBox(height: 24), // Extra padding at the bottom
+                      // Extra padding at the bottom
                     ],
                   ),
                 ),
@@ -97,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Center(
               child: Text(
                 "No user info available",
-                style: GoogleFonts.inter(
+                style: GoogleFonts.roboto(
                   fontSize: 18,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
@@ -112,45 +111,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildHeader(user) {
     final now = DateTime(2025, 5, 31);
-    final daysRemaining =
-        user.premiumExpiredTime != null
-            ? user.premiumExpiredTime.difference(now).inDays
-            : null;
+    final daysRemaining = user.premiumExpiredTime?.difference(now).inDays;
     return Column(
       children: [
-        Text(
-          'YOUR PROFILE',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'PROFILE',
+            style: GoogleFonts.roboto(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withOpacity(0.2),
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+        const SizedBox(height: 10),
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white24, width: 2),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      "lib/assets/images/female-avatar.png",
+                      width: 400,
+                      height: 120,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      user.userName,
+                      style: GoogleFonts.roboto(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white24, width: 2),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      daysRemaining != null
+                          ? 'Your plan: $daysRemaining Days Remaining'
+                          : 'Your plan: Free',
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(width: 50), // space between text and button
+                    _buildGetAccountProButton(),
+                  ],
+                ),
+              ),
+            ],
           ),
-          child: const Icon(Icons.star, size: 50, color: Colors.white),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          user.userName,
-          style: GoogleFonts.inter(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          daysRemaining != null
-              ? 'Account: $daysRemaining Days Remaining'
-              : 'Account: Not Premium',
-          style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
         ),
       ],
     );
@@ -176,34 +209,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Container(
-                child: ListTile(
-                  title: Text(
-                    option,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: isLogout ? Colors.red : Colors.white,
-                      fontWeight:
-                          isLogout ? FontWeight.bold : FontWeight.normal,
-                    ),
+              child: ListTile(
+                title: Text(
+                  option,
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    color: isLogout ? Colors.red : Colors.white,
+                    fontWeight: isLogout ? FontWeight.bold : FontWeight.normal,
                   ),
-                  trailing: Icon(
-                    Icons.chevron_right,
-                    color: isLogout ? Colors.red : Colors.white70,
-                  ),
-                  onTap: () {
-                    if (isLogout) {
-                      _logout();
-                    } else {
-                      Get.snackbar(
-                        'Tapped',
-                        'Selected $option',
-                        backgroundColor: Colors.grey[800],
-                        colorText: Colors.white,
-                      );
-                    }
-                  },
                 ),
+                trailing: Icon(
+                  Icons.chevron_right,
+                  color: isLogout ? Colors.red : Colors.white70,
+                ),
+                onTap: () {
+                  if (isLogout) {
+                    _logout();
+                  } else {
+                    Get.snackbar(
+                      'Tapped',
+                      'Selected $option',
+                      backgroundColor: Colors.grey[800],
+                      colorText: Colors.white,
+                    );
+                  }
+                },
               ),
             );
           }).toList(),
@@ -213,42 +243,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildGetAccountProButton() {
     return ElevatedButton(
       onPressed: () {
-        Get.defaultDialog(
-          title: 'Upgrade Account',
-          titleStyle: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          middleText: 'Proceed to upgrade your account via VNPay?',
-          middleTextStyle: GoogleFonts.inter(
-            fontSize: 16,
-            color: Colors.white70,
-          ),
-          textConfirm: 'Yes',
-          textCancel: 'No',
-          confirmTextColor: Colors.white,
-          buttonColor: Colors.green,
-          cancelTextColor: Colors.white70,
-          backgroundColor: Colors.grey[900],
-          onConfirm: () {
-            _launchUrl();
-            Get.back();
-          },
-          onCancel: () => Get.back(),
-        );
+        Get.to(() => const PremiumIntroPage());
       },
+
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.yellow, width: 1.5),
+        ),
         elevation: 2,
       ),
       child: Text(
-        'Get Account Pro',
-        style: GoogleFonts.inter(
+        'Upgrade',
+        style: GoogleFonts.roboto(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          color: Colors.yellow,
         ),
       ),
     );

@@ -17,13 +17,13 @@ class SnackbarService {
     Get.snackbar(
       title,
       '',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       backgroundColor: _getBackgroundColor(type),
       colorText: Colors.white,
       snackStyle: SnackStyle.FLOATING,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      animationDuration: const Duration(milliseconds: 700),
+      animationDuration: const Duration(milliseconds: 500),
       forwardAnimationCurve: Curves.easeOutBack,
       reverseAnimationCurve: Curves.easeInBack,
       messageText: Text(

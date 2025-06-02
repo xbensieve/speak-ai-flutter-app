@@ -34,7 +34,7 @@ class LoginViewModel extends GetxController {
 
   Future<bool> signInWithGoogle(String idToken) async {
     try {
-      final response = await apiService.loginWithGoolge(idToken);
+      final response = await apiService.loginWithGoogle(idToken);
       if (response.isSuccess && response.result != null) {
         await storage.write('accessToken', response.result!.accessToken);
         await storage.write('refreshToken', response.result!.refreshToken);

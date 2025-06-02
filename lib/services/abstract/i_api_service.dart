@@ -5,6 +5,6 @@ import "package:english_app_with_ai/models/user_model.dart";
 
 abstract class IApiService {
   Future<LoginResponse> login(LoginRequest request);
-  Future<LoginResponse> loginWithGoolge(String idToken);
+  Future<LoginResponse> loginWithGoogle(String idToken);
   Future<ResponseModel<UserModel>> getUserInfo();
 }

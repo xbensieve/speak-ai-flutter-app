@@ -7,7 +7,7 @@ import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 import '../components/snackbar_service.dart';
 import '../components/square_tile.dart';
-import '../components/loading_overlay.dart'; // Import LoadingOverlay
+import '../components/loading_overlay.dart';
 import '../components/navigation_menu.dart';
 import '../view_models/login_view_model.dart';
 
@@ -142,9 +142,9 @@ class _LoginPageState extends State<LoginPage>
           body: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF6A89FF), Color(0xFF2C2C48)],
               ),
             ),
             child: SafeArea(
@@ -163,25 +163,36 @@ class _LoginPageState extends State<LoginPage>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 50),
-                            Text(
-                              "Echo Nexus",
-                              style: GoogleFonts.dancingScript(
-                                color: Colors.white,
-                                fontSize: 80,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'lib/assets/images/2.png',
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.contain,
+                                ),
+                                Text(
+                                  "I R S M",
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              "Sign In",
-                              style: GoogleFonts.inter(
+                              "Welcome back!",
+                              style: GoogleFonts.roboto(
                                 color: Colors.white,
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 30),
                             MyTextField(
                               controller: usernameController,
                               hintText: 'Username',
@@ -207,7 +218,7 @@ class _LoginPageState extends State<LoginPage>
                                     },
                                     child: Text(
                                       "Forgot password?",
-                                      style: GoogleFonts.inter(
+                                      style: GoogleFonts.roboto(
                                         color: Colors.white,
                                         fontSize: 16,
                                       ),
@@ -242,7 +253,7 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                   Text(
                                     "Or continue with",
-                                    style: GoogleFonts.inter(
+                                    style: GoogleFonts.roboto(
                                       color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -270,22 +281,20 @@ class _LoginPageState extends State<LoginPage>
                               children: [
                                 Text(
                                   "Not a member? ",
-                                  style: GoogleFonts.inter(
-                                    color: Colors.black87,
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.white70,
                                     fontSize: 16,
                                   ),
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    // TODO: Navigate to the registration page
-                                    // e.g., Get.to(() => RegisterPage());
+                                    //Get.to(() => RegisterPage());
                                   },
                                   child: Text(
                                     "Register now",
-                                    style: GoogleFonts.inter(
+                                    style: GoogleFonts.roboto(
                                       color: Colors.white,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),

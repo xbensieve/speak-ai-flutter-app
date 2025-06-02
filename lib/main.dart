@@ -28,10 +28,6 @@ class MyApp extends StatelessWidget {
       title: 'Echo Nexus',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        snackBarTheme: const SnackBarThemeData(
-          contentTextStyle: TextStyle(color: Colors.white),
-        ),
         scaffoldBackgroundColor: Colors.transparent,
         useMaterial3: true,
       ),

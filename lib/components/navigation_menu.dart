@@ -1,10 +1,10 @@
-import 'dart:ui';
+import 'package:english_app_with_ai/pages/role_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:english_app_with_ai/pages/home_screen.dart';
 import 'package:english_app_with_ai/pages/profile_screen.dart';
-import 'package:english_app_with_ai/pages/tutor_screen.dart';
 import 'package:english_app_with_ai/pages/learn_screen.dart';
+
 import 'header.dart';
 
 class NavigationMenu extends StatelessWidget {
@@ -13,16 +13,27 @@ class NavigationMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final NavigationController controller = Get.find<NavigationController>();
-    const labels = ['Home', 'Learn', 'AI Tutor', 'Profile'];
+    const labels = ['Home', 'Learn', 'Role-play', 'Profile'];
 
     return Theme(
       data: Theme.of(context).copyWith(
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.grey[900], // Dark background for nav bar
-          unselectedItemColor: Colors.grey[400], // Unselected items
-          selectedItemColor: Colors.white, // Base color for selected item
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: const Color(0xFF1F1F39),
+          indicatorColor: Colors.blue.withOpacity(0.2),
+          labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>((
+            states,
+          ) {
+            if (states.contains(MaterialState.selected)) {
+              return const TextStyle(color: Colors.blue);
+            }
+            return const TextStyle(color: Colors.white);
+          }),
+          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return const IconThemeData(color: Colors.blue);
+            }
+            return const IconThemeData(color: Colors.white);
+          }),
         ),
       ),
       child: Scaffold(
@@ -30,20 +41,16 @@ class NavigationMenu extends StatelessWidget {
           children: [
             Container(
               decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("lib/assets/images/background.jpg"),
-                  fit: BoxFit.cover,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF6A89FF), Color(0xFF2C2C48)],
                 ),
               ),
-            ),
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(color: Colors.transparent),
             ),
             Obx(
               () => Column(
                 children: [
-                  const HeaderWidget(),
                   Expanded(
                     child: controller.screens[controller.selectedIndex.value],
                   ),
@@ -54,81 +61,38 @@ class NavigationMenu extends StatelessWidget {
         ),
         bottomNavigationBar: Obx(() {
           final currentIndex = controller.selectedIndex.value;
-
-          return Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 10,
-                  offset: const Offset(0, -2), // Shadow above the bar
-                ),
-              ],
-            ),
-            child: NavigationBar(
-              height: 80,
-              elevation: 8, // Floating effect
-              backgroundColor: Colors.grey[900], // Dark theme for nav bar
-              selectedIndex: currentIndex,
-              onDestinationSelected: (index) {
-                controller.onDestinationSelected(index);
-              },
-              indicatorColor: Colors.blue.withOpacity(
-                0.2,
-              ), // Semi-transparent oval
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  selectedIcon: _GradientIcon(
-                    icon: Icons.home_filled,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.menu_book),
-                  selectedIcon: _GradientIcon(
-                    icon: Icons.menu_book_rounded,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  label: 'Learn',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.speaker_notes_outlined),
-                  selectedIcon: _GradientIcon(
-                    icon: Icons.speaker_notes,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  label: 'AI Tutor',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person),
-                  selectedIcon: _GradientIcon(
-                    icon: Icons.person_rounded,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF87CEFA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  label: 'Profile',
-                ),
-              ],
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            ),
+          return NavigationBar(
+            height: 70,
+            elevation: 8,
+            selectedIndex: currentIndex,
+            onDestinationSelected: (index) {
+              controller.onDestinationSelected(index);
+            },
+            backgroundColor: Color(0xFF1F1F39),
+            indicatorColor: Colors.blue.withOpacity(0.2),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home),
+                selectedIcon: Icon(Icons.home_filled),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.book_outlined),
+                selectedIcon: Icon(Icons.book),
+                label: 'Learn',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.chat_outlined),
+                selectedIcon: Icon(Icons.chat_rounded),
+                label: 'Role-play',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person_outline),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Profile',
+              ),
+            ],
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           );
         }),
       ),
@@ -136,30 +100,14 @@ class NavigationMenu extends StatelessWidget {
   }
 }
 
-// Custom widget for gradient icons
-class _GradientIcon extends StatelessWidget {
-  final IconData icon;
-  final Gradient gradient;
-
-  const _GradientIcon({required this.icon, required this.gradient});
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Icon(icon, color: Colors.white), // Base color for gradient
-    );
-  }
-}
-
 class NavigationController extends GetxController {
   final RxInt selectedIndex = 0.obs;
 
-  final List<Widget> screens = const [
-    HomeScreen(),
+  final List<Widget> screens = [
+    const HomeScreen(),
     LearnScreen(),
-    TutorScreen(),
-    ProfileScreen(),
+    RolePlayScreen(),
+    const ProfileScreen(),
   ];
 
   void onDestinationSelected(int index) {

@@ -2,7 +2,6 @@ import 'package:english_app_with_ai/components/navigation_menu.dart';
 import 'package:english_app_with_ai/config/api_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -33,6 +32,7 @@ class _TutorScreenState extends State<TutorScreen> {
   bool _isListening = false;
   String _lastWords = '';
   bool _showTextField = false;
+  bool _messageSent = false; // Flag to prevent duplicate sends
 
   @override
   void initState() {
@@ -47,11 +47,23 @@ class _TutorScreenState extends State<TutorScreen> {
     bool available = await _speech.initialize(
       onStatus: (status) {
         print('Speech status: $status');
-        if (status == 'done' || status == 'notListening') {
-          setState(() => _isListening = false);
-        }
+        setState(() {
+          _isListening = false;
+          if (status == 'done' || status == 'notListening') {
+            if (_lastWords.isNotEmpty && !_messageSent) {
+              _sendMessage(_lastWords);
+              _messageSent = true; // Mark message as sent
+            }
+          }
+        });
       },
-      onError: (error) => print('Speech error: $error'),
+      onError: (error) {
+        print('Speech error: $error');
+        setState(() {
+          _isListening = false;
+          _messageSent = false; // Reset flag on error
+        });
+      },
     );
     if (!available) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -156,13 +168,9 @@ class _TutorScreenState extends State<TutorScreen> {
       );
 
       await Future.delayed(const Duration(seconds: 5));
-
-      // Stop the SignalR connection
       await hubConnection.stop();
       print('SignalR connection stopped.');
-
       Get.off(() => const NavigationMenu());
-      print('SignalR connection stopped.');
     } catch (e) {
       print('Error ending conversation: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -176,9 +184,13 @@ class _TutorScreenState extends State<TutorScreen> {
       _speech.stop();
       setState(() {
         _isListening = false;
-        _showTextField = false; // Hide TextField when stopping listening
+        _showTextField = false;
       });
     } else {
+      setState(() {
+        _messageSent = false; // Reset flag for new session
+        _lastWords = ''; // Clear previous words
+      });
       _speech.listen(
         onResult: (result) {
           setState(() {
@@ -190,10 +202,11 @@ class _TutorScreenState extends State<TutorScreen> {
         pauseFor: const Duration(seconds: 5),
         cancelOnError: true,
         partialResults: true,
+        localeId: 'en-US', // Set locale for English
       );
       setState(() {
         _isListening = true;
-        _showTextField = false; // Ensure TextField is hidden when listening
+        _showTextField = false;
       });
     }
   }

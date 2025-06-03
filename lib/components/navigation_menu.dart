@@ -5,15 +5,12 @@ import 'package:english_app_with_ai/pages/home_screen.dart';
 import 'package:english_app_with_ai/pages/profile_screen.dart';
 import 'package:english_app_with_ai/pages/learn_screen.dart';
 
-import 'header.dart';
-
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
     final NavigationController controller = Get.find<NavigationController>();
-    const labels = ['Home', 'Learn', 'Role-play', 'Profile'];
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -52,7 +49,7 @@ class NavigationMenu extends StatelessWidget {
               () => Column(
                 children: [
                   Expanded(
-                    child: controller.screens[controller.selectedIndex.value],
+                    child: controller.getScreen(controller.selectedIndex.value),
                   ),
                 ],
               ),
@@ -103,12 +100,20 @@ class NavigationMenu extends StatelessWidget {
 class NavigationController extends GetxController {
   final RxInt selectedIndex = 0.obs;
 
-  final List<Widget> screens = [
-    const HomeScreen(),
-    LearnScreen(),
-    RolePlayScreen(),
-    const ProfileScreen(),
-  ];
+  Widget getScreen(int index) {
+    switch (index) {
+      case 0:
+        return const HomeScreen();
+      case 1:
+        return const LearnScreen();
+      case 2:
+        return const RolePlayScreen();
+      case 3:
+        return const ProfileScreen();
+      default:
+        return const HomeScreen();
+    }
+  }
 
   void onDestinationSelected(int index) {
     selectedIndex.value = index;

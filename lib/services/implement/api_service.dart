@@ -1,4 +1,7 @@
 import "dart:convert";
+import "package:english_app_with_ai/models/course_model.dart";
+import "package:english_app_with_ai/models/course_response_model.dart";
+import "package:english_app_with_ai/models/query_model.dart";
 import "package:english_app_with_ai/models/response_model.dart";
 import "package:english_app_with_ai/models/user_model.dart";
 import "package:flutter/material.dart";
@@ -74,6 +77,51 @@ class ApiService implements IApiService {
       }
     } catch (e) {
       throw Exception('Login error: $e');
+    }
+  }
+
+  @override
+  Future<ResponseModel<CourseResponseModel<CourseModel>>> getCourses(
+    QueryModel query,
+  ) async {
+    // Build the query parameters dynamically
+    final queryParams = {
+      if (query.pageNumber != null) 'PageNumber': query.pageNumber.toString(),
+      if (query.pageSize != null) 'PageSize': query.pageSize.toString(),
+      if (query.sortBy != null) 'SortBy': query.sortBy,
+      if (query.sortDescending != null)
+        'SortDescending': query.sortDescending.toString(),
+      if (query.keyword != null) 'Keyword': query.keyword,
+      if (query.levelId != null) 'LevelId': query.levelId.toString(),
+      if (query.isPremium != null) 'IsPremium': query.isPremium.toString(),
+      if (query.isActive != null) 'IsActive': query.isActive.toString(),
+    };
+
+    final uri = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.coursesEndpoint}',
+    ).replace(queryParameters: queryParams);
+
+    try {
+      final response = await http.get(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return ResponseModel<CourseResponseModel<CourseModel>>.fromJson(
+          jsonData,
+          (data) => CourseResponseModel<CourseModel>.fromJson(
+            data,
+            (item) => CourseModel.fromJson(item),
+          ),
+        );
+      } else {
+        final errorResponse = jsonDecode(response.body);
+        throw Exception(errorResponse['message'] ?? 'Unknown error occurred');
+      }
+    } catch (e) {
+      throw Exception('Failed to load courses: $e');
     }
   }
 }

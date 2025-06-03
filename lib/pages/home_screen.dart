@@ -1,7 +1,13 @@
 import 'package:english_app_with_ai/components/my_button.dart';
+import 'package:english_app_with_ai/pages/role_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../components/navigation_menu.dart';
+import 'learn_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final NavigationController navController = Get.find<NavigationController>();
     return Scaffold(
       body: Center(
         child: Padding(
@@ -76,12 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Column(
-                children: const [
-                  OptionButton(label: "Courses", icon: Icons.menu_book),
-                  OptionButton(label: "Talk", icon: Icons.chat_bubble),
+                children: [
+                  OptionButton(
+                    label: "Courses",
+                    icon: Icons.menu_book,
+                    onPressed: () => navController.onDestinationSelected(1),
+                  ),
+                  OptionButton(
+                    label: "Talk",
+                    icon: Icons.chat_bubble,
+                    onPressed: () => navController.onDestinationSelected(2),
+                  ),
                   OptionButton(
                     label: "Role Play",
                     icon: Icons.record_voice_over,
+                    onPressed: () => navController.onDestinationSelected(2),
                   ),
                 ],
               ),
@@ -96,17 +112,21 @@ class _HomeScreenState extends State<HomeScreen> {
 class OptionButton extends StatelessWidget {
   final String label;
   final IconData icon;
+  final VoidCallback onPressed;
 
-  const OptionButton({required this.label, required this.icon, super.key});
+  const OptionButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: ElevatedButton.icon(
-        onPressed: () {
-          debugPrint('$label button pressed');
-        },
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           minimumSize: const Size.fromHeight(50),
           backgroundColor: Colors.transparent,
@@ -120,7 +140,7 @@ class OptionButton extends StatelessWidget {
         icon: Icon(icon, color: Colors.white),
         label: Text(
           label,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.roboto(
             fontSize: 16,
             color: Colors.white,
             fontWeight: FontWeight.w500,

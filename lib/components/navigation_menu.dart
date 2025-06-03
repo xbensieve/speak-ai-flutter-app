@@ -79,7 +79,7 @@ class NavigationMenu extends StatelessWidget {
               NavigationDestination(
                 icon: Icon(Icons.book_outlined),
                 selectedIcon: Icon(Icons.book),
-                label: 'Learn',
+                label: 'Courses',
               ),
               NavigationDestination(
                 icon: Icon(Icons.chat_outlined),

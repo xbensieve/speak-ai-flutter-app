@@ -1,4 +1,5 @@
 import 'package:english_app_with_ai/pages/splash_screen.dart';
+import 'package:english_app_with_ai/view_models/course_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';

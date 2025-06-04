@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
@@ -5,17 +6,20 @@ Map<String, dynamic>? getDecodedAccessToken() {
   final storage = GetStorage();
   final accessToken = storage.read('accessToken');
 
-  if (accessToken != null && accessToken is String && accessToken.isNotEmpty) {
+  if (accessToken != null &&
+      accessToken is String &&
+      accessToken.isNotEmpty) {
     try {
-      print('Decoding token: $accessToken');
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(
+        accessToken,
+      );
       return decodedToken;
     } catch (e) {
-      print('Error decoding token: $e');
+      debugPrint('[Debug] Error decoding token: $e');
       return null;
     }
   } else {
-    print('Access token not found or empty');
+    debugPrint('[Debug] Access token not found or empty');
     return null;
   }
 }

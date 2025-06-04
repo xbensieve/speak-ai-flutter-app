@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart';
-import 'package:english_app_with_ai/pages/login_page.dart';
 import 'package:english_app_with_ai/components/navigation_menu.dart';
+import 'package:english_app_with_ai/pages/login_page.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../view_models/login_view_model.dart';
 import '../view_models/user_view_model.dart';
@@ -24,28 +23,33 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Initialize AnimationController
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // Animation duration
+      duration: const Duration(seconds: 2),
     );
 
-    // Initialize Fade Animation
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
 
-    // Initialize Scale Animation
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
 
-    // Start the animation
     _controller.forward();
 
-    // Call authentication check
     _checkAuthentication();
   }
 
@@ -56,11 +60,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuthentication() async {
-    final loginViewModel = Get.put(LoginViewModel());
-    final userViewModel = Get.put(UserViewModel());
-    await Future.delayed(const Duration(seconds: 3));
-    String? accessToken = loginViewModel.getAccessToken();
+    Get.lazyPut(() => LoginViewModel());
+    Get.lazyPut(() => UserViewModel());
 
+    await Future.delayed(const Duration(seconds: 3));
+
+    String? accessToken =
+        Get.find<LoginViewModel>().getAccessToken();
     if (accessToken == null) {
       Get.off(() => LoginPage());
     } else {
@@ -81,7 +87,9 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _fadeAnimation,
                 child: ScaleTransition(
                   scale: _scaleAnimation,
-                  child: Image.asset('lib/assets/images/1.png'),
+                  child: Image.asset(
+                    'lib/assets/images/1.png',
+                  ),
                 ),
               ),
             ],

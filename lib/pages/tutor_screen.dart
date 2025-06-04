@@ -1,10 +1,12 @@
 import 'package:english_app_with_ai/components/navigation_menu.dart';
 import 'package:english_app_with_ai/config/api_configuration.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 import '../utils/decode_token.dart';
 
 class TutorScreen extends StatefulWidget {
@@ -23,16 +25,20 @@ class TutorScreen extends StatefulWidget {
 
 class _TutorScreenState extends State<TutorScreen> {
   final HubConnection hubConnection =
-      HubConnectionBuilder().withUrl('${ApiConfig.baseUrl}/chatHub').build();
-  final TextEditingController _messageController = TextEditingController();
+      HubConnectionBuilder()
+          .withUrl('${ApiConfig.baseUrl}/chatHub')
+          .build();
+  final TextEditingController _messageController =
+      TextEditingController();
   final List<Map<String, String>> _messages = [];
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController =
+      ScrollController();
   String? _userId;
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _lastWords = '';
   bool _showTextField = false;
-  bool _messageSent = false; // Flag to prevent duplicate sends
+  bool _messageSent = false;
 
   @override
   void initState() {
@@ -46,49 +52,57 @@ class _TutorScreenState extends State<TutorScreen> {
   Future<void> _initializeSpeech() async {
     bool available = await _speech.initialize(
       onStatus: (status) {
-        print('Speech status: $status');
+        debugPrint('[Debug] Speech status: $status');
         setState(() {
           _isListening = false;
-          if (status == 'done' || status == 'notListening') {
+          if (status == 'done' ||
+              status == 'notListening') {
             if (_lastWords.isNotEmpty && !_messageSent) {
               _sendMessage(_lastWords);
-              _messageSent = true; // Mark message as sent
+              _messageSent = true;
             }
           }
         });
       },
       onError: (error) {
-        print('Speech error: $error');
+        debugPrint('[Debug] Speech error: $error');
         setState(() {
           _isListening = false;
-          _messageSent = false; // Reset flag on error
+          _messageSent = false;
         });
       },
     );
     if (!available) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speech recognition not available')),
+        const SnackBar(
+          content: Text(
+            'Speech recognition not available',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       );
     }
   }
 
-  Future<void> _loadUserId() async {
-    try {
-      final decodeToken = getDecodedAccessToken();
-      setState(() {
-        _userId = decodeToken?['Id']?.toString();
-      });
-    } catch (e) {
-      print('Error decoding token: $e');
-    }
+  void _loadUserId() {
+    final decodeToken = getDecodedAccessToken();
+    setState(() {
+      _userId = decodeToken?['Id']?.toString();
+    });
   }
 
   Future<void> _startHubConnection() async {
     try {
       await hubConnection.start();
-      print('SignalR connection started.');
+      debugPrint('[Debug] SignalR connection started.');
     } catch (e) {
-      print('Error starting SignalR connection: $e');
+      debugPrint(
+        '[Debug] Error starting SignalR connection: $e',
+      );
     }
   }
 
@@ -96,7 +110,10 @@ class _TutorScreenState extends State<TutorScreen> {
     hubConnection.on('ReceiveMessage', (arguments) {
       if (arguments != null && arguments.isNotEmpty) {
         setState(() {
-          _messages.add({'sender': 'AI', 'message': arguments[0].toString()});
+          _messages.add({
+            'sender': 'AI',
+            'message': arguments[0].toString(),
+          });
           _scrollToBottom();
         });
       }
@@ -116,66 +133,69 @@ class _TutorScreenState extends State<TutorScreen> {
   }
 
   Future<void> _sendMessage(String message) async {
-    if (_userId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('User ID not found')));
+    if (message.trim().isEmpty) {
+      debugPrint('[Debug] Message is empty');
       return;
     }
-
-    if (message.trim().isEmpty) return;
-
     final chatHubDTO = {
       'UserId': _userId,
-      'Message': message,
+      'Message': message.trim(),
       'TopicId': widget.topicId,
     };
-
     setState(() {
       _messages.add({'sender': 'User', 'message': message});
       _scrollToBottom();
     });
     _messageController.clear();
-
     try {
       final response = await hubConnection.invoke(
         'SendMessage',
         args: [chatHubDTO],
       );
       setState(() {
-        _messages.add({'sender': 'AI', 'message': response.toString()});
+        _messages.add({
+          'sender': 'AI',
+          'message': response.toString(),
+        });
         _scrollToBottom();
       });
     } catch (e) {
-      print('Error sending message: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to send message')));
+      debugPrint('[Debug] Error sending message: $e');
+      return;
     }
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => Center(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: const CupertinoActivityIndicator(
+                radius: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+    );
   }
 
   Future<void> _endConversation() async {
     try {
-      final response = await hubConnection.invoke('EndConversation');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            response.toString(),
-            style: const TextStyle(fontSize: 14),
-          ),
-          duration: const Duration(seconds: 5),
-        ),
+      _showLoadingDialog();
+      final response = await hubConnection.invoke(
+        'EndConversation',
       );
-
-      await Future.delayed(const Duration(seconds: 5));
+      debugPrint(
+        '[Debug] EndConversation response: ${response.toString()}',
+      );
       await hubConnection.stop();
-      print('SignalR connection stopped.');
-      Get.off(() => const NavigationMenu());
+      debugPrint('Status: ${hubConnection.state}');
+      Get.offAll(() => const NavigationMenu());
     } catch (e) {
-      print('Error ending conversation: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error ending conversation')),
-      );
+      debugPrint('Error ending conversation: $e');
     }
   }
 
@@ -188,8 +208,8 @@ class _TutorScreenState extends State<TutorScreen> {
       });
     } else {
       setState(() {
-        _messageSent = false; // Reset flag for new session
-        _lastWords = ''; // Clear previous words
+        _messageSent = false;
+        _lastWords = '';
       });
       _speech.listen(
         onResult: (result) {
@@ -202,7 +222,7 @@ class _TutorScreenState extends State<TutorScreen> {
         pauseFor: const Duration(seconds: 5),
         cancelOnError: true,
         partialResults: true,
-        localeId: 'en-US', // Set locale for English
+        localeId: 'en-US',
       );
       setState(() {
         _isListening = true;
@@ -245,7 +265,7 @@ class _TutorScreenState extends State<TutorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'AI Chat',
+          'SpeakAI',
           style: GoogleFonts.roboto(
             fontSize: 25,
             fontWeight: FontWeight.bold,
@@ -254,7 +274,11 @@ class _TutorScreenState extends State<TutorScreen> {
         ),
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+            size: 24,
+          ),
           onPressed: () async {
             await _endConversation();
           },
@@ -269,138 +293,174 @@ class _TutorScreenState extends State<TutorScreen> {
             colors: [Color(0xFF6A89FF), Color(0xFF2C2C48)],
           ),
         ),
-        child: Column(
-          children: [
-            const SizedBox(height: 100),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                widget.scenarioPrompt,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.start,
-              ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 20,
             ),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(8.0),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  final isUser = message['sender'] == 'User';
-                  return Align(
-                    alignment:
-                        isUser ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 4.0,
-                        horizontal: 8.0,
-                      ),
-                      padding: const EdgeInsets.all(12.0),
-                      decoration: BoxDecoration(
-                        color: isUser ? Colors.blueAccent : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        message['message']!,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: isUser ? Colors.white : Colors.black87,
-                        ),
-                      ),
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    widget.scenarioPrompt,
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.keyboard,
-                          color: Colors.white70,
-                          size: 30,
-                        ),
-                        onPressed: _toggleTextField,
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              _isListening
-                                  ? Colors.blueAccent
-                                  : Colors.transparent,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _isListening ? Icons.mic : Icons.mic_none,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: _toggleListening,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.close,
-                          color: Colors.white70,
-                          size: 30,
-                        ),
-                        onPressed: _closeInput,
-                      ),
-                    ],
+                    textAlign: TextAlign.start,
                   ),
-                  if (_showTextField)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              style: GoogleFonts.roboto(
-                                fontSize: 20,
-                                color: Colors.white,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(8.0),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final isUser =
+                          message['sender'] == 'User';
+                      return Align(
+                        alignment:
+                            isUser
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                        child: Container(
+                          margin:
+                              const EdgeInsets.symmetric(
+                                vertical: 4.0,
+                                horizontal: 8.0,
                               ),
-                              controller: _messageController,
-                              decoration: InputDecoration(
-                                hintText: 'Type your message...',
-                                hintStyle: GoogleFonts.roboto(
-                                  fontSize: 20,
-                                  color: Colors.grey,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                              onSubmitted: _sendMessage,
+                          padding: const EdgeInsets.all(
+                            12.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                isUser
+                                    ? Colors.blueAccent
+                                    : Colors.grey[300],
+                            borderRadius:
+                                BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            message['message']!,
+                            style: GoogleFonts.roboto(
+                              fontSize: 15,
+                              color:
+                                  isUser
+                                      ? Colors.white
+                                      : Colors.black,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.send,
-                              color: Colors.blueAccent,
-                            ),
-                            onPressed:
-                                () => _sendMessage(_messageController.text),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.keyboard_alt_outlined,
+                            color: Colors.white70,
+                            size: 25,
                           ),
-                        ],
-                      ),
+                          onPressed: _toggleTextField,
+                        ),
+                        const SizedBox(width: 25),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color:
+                                _isListening
+                                    ? Colors.blueAccent
+                                    : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              _isListening
+                                  ? Icons.mic
+                                  : Icons.mic_none,
+                              color: Colors.white70,
+                              size: 25,
+                            ),
+                            onPressed: _toggleListening,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close_sharp,
+                            color: Colors.white70,
+                            size: 25,
+                          ),
+                          onPressed: _closeInput,
+                        ),
+                      ],
                     ),
-                ],
-              ),
+                    if (_showTextField)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                style: GoogleFonts.roboto(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                                controller:
+                                    _messageController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      'Type your message...',
+                                  hintStyle:
+                                      GoogleFonts.roboto(
+                                        fontSize: 15,
+                                        color: Colors.grey,
+                                      ),
+
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          30,
+                                        ),
+                                  ),
+                                ),
+                                onSubmitted: _sendMessage,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.send_sharp,
+                                color: Colors.blueAccent,
+                                size: 25,
+                              ),
+                              onPressed:
+                                  () => _sendMessage(
+                                    _messageController.text,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

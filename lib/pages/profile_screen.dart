@@ -1,12 +1,12 @@
+import 'package:english_app_with_ai/pages/login_page.dart';
 import 'package:english_app_with_ai/pages/premium_intro_screen.dart';
+import 'package:english_app_with_ai/view_models/login_view_model.dart';
+import 'package:english_app_with_ai/view_models/user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:english_app_with_ai/pages/login_page.dart';
-import 'package:english_app_with_ai/view_models/login_view_model.dart';
-import 'package:english_app_with_ai/view_models/user_view_model.dart';
 
 final Uri _url = Uri.parse(
   'https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=03',
@@ -16,7 +16,8 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() =>
+      _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -47,8 +48,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fontSize: 20,
         color: Colors.black,
       ),
-      middleText: 'Are you sure? You cannot undo this action.',
-      middleTextStyle: GoogleFonts.roboto(fontSize: 18, color: Colors.black),
+      middleText:
+          'Are you sure? You cannot undo this action.',
+      middleTextStyle: GoogleFonts.roboto(
+        fontSize: 18,
+        color: Colors.black,
+      ),
       textConfirm: 'Yes',
       textCancel: 'No',
       confirmTextColor: Colors.white,
@@ -59,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         loginViewModel.logout();
         Get.offAll(() => const LoginPage());
       },
-      onCancel: () => Get.back(),
+      onCancel: () => {},
     );
   }
 
@@ -69,13 +74,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Obx(() {
           if (userViewModel.isLoading.value) {
-            return const Center(child: CupertinoActivityIndicator(radius: 20));
+            return const Center(
+              child: CupertinoActivityIndicator(
+                radius: 20,
+                color: Colors.white,
+              ),
+            );
           } else if (userViewModel.user.value != null) {
             final user = userViewModel.user.value!;
             return RefreshIndicator(
               onRefresh: () async => _loadUser(),
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
+                physics:
+                    const AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -111,7 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildHeader(user) {
     final now = DateTime(2025, 5, 31);
-    final daysRemaining = user.premiumExpiredTime?.difference(now).inDays;
+    final daysRemaining =
+        user.premiumExpiredTime?.difference(now).inDays;
     return Column(
       children: [
         Align(
@@ -135,7 +147,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white24, width: 2),
+                  border: Border.all(
+                    color: Colors.white24,
+                    width: 2,
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -163,7 +178,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white24, width: 2),
+                  border: Border.all(
+                    color: Colors.white24,
+                    width: 2,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -177,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.white70,
                       ),
                     ),
-                    const SizedBox(width: 50), // space between text and button
+                    const SizedBox(
+                      width: 50,
+                    ), // space between text and button
                     _buildGetAccountProButton(),
                   ],
                 ),
@@ -208,19 +228,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final isLogout = option == 'Log out';
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                vertical: 4,
+              ),
               child: ListTile(
                 title: Text(
                   option,
                   style: GoogleFonts.roboto(
                     fontSize: 20,
-                    color: isLogout ? Colors.red : Colors.white,
-                    fontWeight: isLogout ? FontWeight.bold : FontWeight.normal,
+                    color:
+                        isLogout
+                            ? Colors.red
+                            : Colors.white,
+                    fontWeight:
+                        isLogout
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                   ),
                 ),
                 trailing: Icon(
                   Icons.chevron_right,
-                  color: isLogout ? Colors.red : Colors.white70,
+                  color:
+                      isLogout
+                          ? Colors.red
+                          : Colors.white70,
                 ),
                 onTap: () {
                   if (isLogout) {
@@ -248,10 +279,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 65,
+          vertical: 10,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.yellow, width: 1.5),
+          side: const BorderSide(
+            color: Colors.yellow,
+            width: 1.5,
+          ),
         ),
         elevation: 2,
       ),

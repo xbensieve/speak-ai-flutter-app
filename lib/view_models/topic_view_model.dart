@@ -21,6 +21,7 @@ class TopicViewModel {
           'https://mrctas.org.au/wp-content/uploads/2021/12/careersteps.jpg',
     },
   };
+
   Map<int, Map<String, String>> getTopics() {
     return topics;
   }

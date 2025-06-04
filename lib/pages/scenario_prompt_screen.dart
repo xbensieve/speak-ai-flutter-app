@@ -1,5 +1,7 @@
+import 'package:animate_do/animate_do.dart'; // For animations
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'tutor_screen.dart';
 
 class ScenarioPromptScreen extends StatelessWidget {
@@ -16,16 +18,23 @@ class ScenarioPromptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
-          'Scenario',
+          'Your Scenario',
           style: GoogleFonts.roboto(
             fontSize: 25,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+            size: 24,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -36,51 +45,101 @@ class ScenarioPromptScreen extends StatelessWidget {
             colors: [Color(0xFF6A89FF), Color(0xFF2C2C48)],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                scenarioPrompt,
-                style: GoogleFonts.roboto(fontSize: 25, color: Colors.white),
-                textAlign: TextAlign.left,
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => TutorScreen(
-                            topicId: topicId,
-                            scenarioPrompt: scenarioPrompt,
-                          ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 20,
+            ),
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: FadeInUp(
+                    duration: const Duration(
+                      milliseconds: 900,
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Start Conversation',
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: SingleChildScrollView(
+                        child: Text(
+                          scenarioPrompt,
+                          style: GoogleFonts.roboto(
+                            fontSize: 25,
+                            color: Colors.white,
+                            height: 1.6,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 30),
+                ZoomIn(
+                  duration: const Duration(
+                    milliseconds: 1000,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (
+                                context,
+                                animation,
+                                secondaryAnimation,
+                              ) => TutorScreen(
+                                topicId: topicId,
+                                scenarioPrompt:
+                                    scenarioPrompt,
+                              ),
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          transitionDuration:
+                              const Duration(
+                                milliseconds: 500,
+                              ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 18,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      'Begin Conversation',
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

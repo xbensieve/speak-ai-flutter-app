@@ -9,9 +9,13 @@ import "../../models/user_model.dart";
 
 abstract class IApiService {
   Future<LoginResponse> login(LoginRequest request);
+
   Future<LoginResponse> loginWithGoogle(String idToken);
+
   Future<ResponseModel<UserModel>> getUserInfo();
-  Future<ResponseModel<CourseResponseModel<CourseModel>>> getCourses(
-    QueryModel query,
-  );
+
+  Future<ResponseModel<CourseResponseModel<CourseModel>>>
+  getCourses(QueryModel query);
+
+  Future<String?> getScenarioByTopicId(int topicId);
 }

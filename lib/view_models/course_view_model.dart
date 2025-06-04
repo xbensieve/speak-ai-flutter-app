@@ -12,7 +12,6 @@ class CourseViewModel extends GetxController {
   var isLoading = false.obs;
   var error = ''.obs;
 
-  // Example default query
   final query = QueryModel(pageNumber: 1, pageSize: 10);
 
   void fetchCourses() async {

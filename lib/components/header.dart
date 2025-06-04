@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HeaderWidget extends StatelessWidget {
   const HeaderWidget({super.key});
@@ -7,51 +8,76 @@ class HeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(width: 10),
-                  Icon(Icons.menu, color: Colors.white),
-                ],
-              ),
-              Row(
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.local_fire_department,
-                        color: Colors.orange,
-                        size: 20,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Builder(
+                  builder:
+                      (context) => IconButton(
+                        icon: const Icon(
+                          Icons.menu_sharp,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
                       ),
-                      const SizedBox(width: 4),
-                      const Text("1", style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.diamond,
-                        color: Colors.purpleAccent,
-                        size: 20,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.local_fire_department_sharp,
+                      color: Colors.orange,
+                      size: 35,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "99",
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 4),
-                      const Text("60", style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.diamond_sharp,
+                      color: Colors.purpleAccent,
+                      size: 35,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "60",
+                      style: GoogleFonts.roboto(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            CircleAvatar(
+              backgroundColor: Colors.white24,
+              child: Icon(
+                Icons.explore_sharp,
+                size: 35,
+                color: Colors.white,
               ),
-              CircleAvatar(
-                radius: 14,
-                backgroundColor: Colors.white24,
-                child: Icon(Icons.explore, size: 16, color: Colors.white),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

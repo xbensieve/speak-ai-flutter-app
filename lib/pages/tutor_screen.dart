@@ -1,4 +1,3 @@
-import 'package:english_app_with_ai/components/navigation_menu.dart';
 import 'package:english_app_with_ai/config/api_configuration.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:signalr_netcore/signalr_client.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../utils/decode_token.dart';
+import 'assessment_screen.dart';
 
 class TutorScreen extends StatefulWidget {
   final int topicId;
@@ -184,19 +184,54 @@ class _TutorScreenState extends State<TutorScreen> {
 
   Future<void> _endConversation() async {
     try {
-      _showLoadingDialog();
       final response = await hubConnection.invoke(
         'EndConversation',
       );
       debugPrint(
-        '[Debug] EndConversation response: ${response.toString()}',
+        '[Debug] EndConversation response: $response',
       );
       await hubConnection.stop();
       debugPrint('Status: ${hubConnection.state}');
-      Get.offAll(() => const NavigationMenu());
+      Map<String, String> parsedResponse = _parseResponse(
+        response.toString(),
+      );
+      Get.offAll(
+        () => AssessmentScreen(
+          botResponse:
+              'Thanks for chatting! Here\'s your summary and feedback:',
+          summary: parsedResponse['Summary'] ?? '',
+          strengths: parsedResponse['Strengths'] ?? '',
+          weaknesses: parsedResponse['Weaknesses'] ?? '',
+          suggestions: parsedResponse['Suggestions'] ?? '',
+        ),
+      );
     } catch (e) {
       debugPrint('Error ending conversation: $e');
     }
+  }
+
+  Map<String, String> _parseResponse(String response) {
+    Map<String, String> result = {};
+    final lines = response.split('\n');
+    for (var line in lines) {
+      if (line.contains('Summary:')) {
+        result['Summary'] =
+            line.replaceAll('Summary:', '').trim();
+      }
+      if (line.contains('Strengths:')) {
+        result['Strengths'] =
+            line.replaceAll('Strengths:', '').trim();
+      }
+      if (line.contains('Weaknesses:')) {
+        result['Weaknesses'] =
+            line.replaceAll('Weaknesses:', '').trim();
+      }
+      if (line.contains('Suggestions:')) {
+        result['Suggestions'] =
+            line.replaceAll('Suggestions:', '').trim();
+      }
+    }
+    return result;
   }
 
   void _toggleListening() {
@@ -280,7 +315,38 @@ class _TutorScreenState extends State<TutorScreen> {
             size: 24,
           ),
           onPressed: () async {
-            await _endConversation();
+            Get.defaultDialog(
+              title: 'Confirmation',
+              titleStyle: GoogleFonts.roboto(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.black,
+              ),
+              middleText:
+                  'Are you sure you want to end the conversation?',
+              middleTextStyle: GoogleFonts.roboto(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+              textConfirm: 'Yes',
+              textCancel: 'No',
+              confirmTextColor: Colors.white,
+              buttonColor: Colors.blue,
+              cancelTextColor: Colors.black,
+              backgroundColor: Colors.white,
+              onConfirm: () async {
+                Get.back();
+                _showLoadingDialog();
+                try {
+                  await _endConversation();
+                } catch (e) {
+                  debugPrint(
+                    'Error ending conversation: $e',
+                  );
+                }
+              },
+              onCancel: () {},
+            );
           },
         ),
       ),

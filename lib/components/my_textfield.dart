@@ -20,20 +20,32 @@ class MyTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
-        style: GoogleFonts.roboto(color: Colors.white, fontSize: 15),
+        style: GoogleFonts.roboto(
+          color: Colors.white,
+          fontSize: 18,
+        ),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white38, width: 1.5),
+            borderSide: BorderSide(
+              color: Colors.white38,
+              width: 1.5,
+            ),
             borderRadius: BorderRadius.circular(15),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 1.5),
+            borderSide: BorderSide(
+              color: Colors.white,
+              width: 1.5,
+            ),
             borderRadius: BorderRadius.circular(15),
           ),
           fillColor: Colors.transparent,
           filled: true,
           hintText: hintText,
-          hintStyle: GoogleFonts.roboto(color: Colors.grey, fontSize: 15),
+          hintStyle: GoogleFonts.roboto(
+            color: Colors.grey,
+            fontSize: 18,
+          ),
           contentPadding: EdgeInsets.all(20),
         ),
       ),

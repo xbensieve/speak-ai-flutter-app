@@ -49,7 +49,7 @@ class SquareTile extends StatelessWidget {
                   child: Text(
                     label,
                     style: GoogleFonts.roboto(
-                      fontSize: 20,
+                      fontSize: 18,
                       color: Colors.black,
                     ),
                     overflow: TextOverflow.ellipsis,

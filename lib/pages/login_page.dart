@@ -3,12 +3,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../components/loading_overlay.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
+import '../components/navigation_menu.dart';
 import '../components/snackbar_service.dart';
 import '../components/square_tile.dart';
-import '../components/loading_overlay.dart';
-import '../components/navigation_menu.dart';
 import '../view_models/login_view_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,7 +34,8 @@ class _LoginPageState extends State<LoginPage>
 
   Future<void> _handleSignInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser =
+          await _googleSignIn.signIn();
       if (googleUser == null) {
         SnackbarService.showSnackbar(
           title: 'Sign-In Cancelled',
@@ -50,25 +52,30 @@ class _LoginPageState extends State<LoginPage>
       if (idToken == null) {
         SnackbarService.showSnackbar(
           title: 'Sign-In Error',
-          message: 'Google sign-in failed. Please try again.',
+          message:
+              'Google sign-in failed. Please try again.',
           type: SnackbarType.error,
           durationSeconds: 3,
         );
         return;
       }
-      bool success = await loginViewModel.signInWithGoogle(idToken);
+      bool success = await loginViewModel.signInWithGoogle(
+        idToken,
+      );
       if (success) {
         Get.off(() => const NavigationMenu());
       } else {
         SnackbarService.showSnackbar(
           title: 'Sign-In Error',
-          message: 'Google sign-in failed. Please try again.',
+          message:
+              'Google sign-in failed. Please try again.',
           type: SnackbarType.error,
           durationSeconds: 3,
         );
       }
     } catch (error) {
-      String errorMessage = 'Google sign-in failed. Please try again.';
+      String errorMessage =
+          'Google sign-in failed. Please try again.';
       if (error.toString().contains('403') ||
           error.toString().contains('access_denied')) {
         errorMessage =
@@ -83,17 +90,24 @@ class _LoginPageState extends State<LoginPage>
     }
   }
 
-  Future<void> _handleSignIn(String username, String password) async {
+  Future<void> _handleSignIn(
+    String username,
+    String password,
+  ) async {
     if (username.isEmpty || password.isEmpty) {
       SnackbarService.showSnackbar(
         title: 'Error',
-        message: 'Please fill in both username and password',
+        message:
+            'Please fill in both username and password',
         type: SnackbarType.error,
         durationSeconds: 3,
       );
       return;
     }
-    bool success = await loginViewModel.signIn(username, password);
+    bool success = await loginViewModel.signIn(
+      username,
+      password,
+    );
     if (success) {
       Get.off(() => const NavigationMenu());
     } else {
@@ -117,11 +131,21 @@ class _LoginPageState extends State<LoginPage>
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.1),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
     _controller.forward();
   }
 
@@ -135,6 +159,10 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isTabletOrLarger = size.width >= 600;
+    final padding = size.width * 0.06;
+    final fontScale = isTabletOrLarger ? 1.2 : 1.0;
     return Obx(
       () => LoadingOverlay(
         isLoading: loginViewModel.isLoading.value,
@@ -144,168 +172,281 @@ class _LoginPageState extends State<LoginPage>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF6A89FF), Color(0xFF2C2C48)],
+                colors: [
+                  Color(0xFF6A89FF),
+                  Color(0xFF2C2C48),
+                ],
               ),
             ),
             child: SafeArea(
-              child: SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight:
-                        MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top,
-                  ),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'lib/assets/images/2.png',
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.contain,
-                                ),
-                                Text(
-                                  "I R S M",
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              "Welcome back!",
-                              style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                            MyTextField(
-                              controller: usernameController,
-                              hintText: 'Username',
-                              obscureText: false,
-                            ),
-                            const SizedBox(height: 10),
-                            MyTextField(
-                              controller: passwordController,
-                              hintText: 'Password',
-                              obscureText: true,
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 25.0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 600,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: padding,
+                            vertical: size.height * 0.03,
+                          ),
+                          child: FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: SlideTransition(
+                              position: _slideAnimation,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // TODO: Implement forgot password functionality
-                                    },
-                                    child: Text(
-                                      "Forgot password?",
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 16,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .center,
+                                    children: [
+                                      Image.asset(
+                                        'lib/assets/images/2.png',
+                                        width:
+                                            size.width *
+                                            0.2,
+                                        // 20% of screen width
+                                        height:
+                                            size.width *
+                                            0.2,
+                                        fit: BoxFit.contain,
                                       ),
-                                    ),
+                                      SizedBox(
+                                        width:
+                                            size.width *
+                                            0.02,
+                                      ),
+                                      Text(
+                                        "I R S M",
+                                        style:
+                                            GoogleFonts.roboto(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              fontSize:
+                                                  40 *
+                                                  fontScale,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            MyButton(
-                              onTap: () async {
-                                String username =
-                                    usernameController.text.trim();
-                                String password =
-                                    passwordController.text.trim();
-                                await _handleSignIn(username, password);
-                              },
-                            ),
-                            const SizedBox(height: 30),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 25.0,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Divider(
-                                      thickness: 1.2,
-                                      color: Colors.white70,
-                                      endIndent: 10,
-                                    ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.03,
                                   ),
                                   Text(
-                                    "Or continue with",
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: 0.5,
+                                    "Welcome back!",
+                                    style:
+                                        GoogleFonts.roboto(
+                                          color:
+                                              Colors.white,
+                                          fontSize:
+                                              30 *
+                                              fontScale,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.04,
+                                  ),
+                                  MyTextField(
+                                    controller:
+                                        usernameController,
+                                    hintText: 'Username',
+                                    obscureText: false,
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.015,
+                                  ),
+                                  MyTextField(
+                                    controller:
+                                        passwordController,
+                                    hintText: 'Password',
+                                    obscureText: true,
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.03,
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal:
+                                              padding,
+                                        ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .end,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            // TODO: Implement forgot password functionality
+                                          },
+                                          child: Text(
+                                            "Forgot password?",
+                                            style: GoogleFonts.roboto(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              fontSize:
+                                                  16 *
+                                                  fontScale,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Divider(
-                                      thickness: 1.2,
-                                      color: Colors.white70,
-                                      indent: 10,
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.03,
+                                  ),
+                                  MyButton(
+                                    onTap: () async {
+                                      String username =
+                                          usernameController
+                                              .text
+                                              .trim();
+                                      String password =
+                                          passwordController
+                                              .text
+                                              .trim();
+                                      await _handleSignIn(
+                                        username,
+                                        password,
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.04,
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal:
+                                              padding,
+                                        ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Divider(
+                                            thickness: 1.2,
+                                            color:
+                                                Colors
+                                                    .white70,
+                                            endIndent:
+                                                size.width *
+                                                0.02,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Or continue with",
+                                          style: GoogleFonts.roboto(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            fontSize:
+                                                16 *
+                                                fontScale,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w500,
+                                            letterSpacing:
+                                                0.5,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Divider(
+                                            thickness: 1.2,
+                                            color:
+                                                Colors
+                                                    .white70,
+                                            indent:
+                                                size.width *
+                                                0.02,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.04,
+                                  ),
+                                  SquareTile(
+                                    imagePath:
+                                        'lib/assets/images/google_logo.webp',
+                                    onTap:
+                                        _handleSignInWithGoogle,
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        size.height * 0.03,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      Text(
+                                        "Not a member? ",
+                                        style: GoogleFonts.roboto(
+                                          color:
+                                              Colors
+                                                  .white70,
+                                          fontSize:
+                                              16 *
+                                              fontScale,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          //Get.to(() => RegisterPage());
+                                        },
+                                        child: Text(
+                                          "Register now",
+                                          style: GoogleFonts.roboto(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            fontSize:
+                                                16 *
+                                                fontScale,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 30),
-                            SquareTile(
-                              imagePath: 'lib/assets/images/google_logo.webp',
-                              onTap: _handleSignInWithGoogle,
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Not a member? ",
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    //Get.to(() => RegisterPage());
-                                  },
-                                  child: Text(
-                                    "Register now",
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),

@@ -1,4 +1,4 @@
-import 'package:animate_do/animate_do.dart'; // For animations
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,17 +23,23 @@ class AssessmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isTabletOrLarger = size.width >= 600;
+    final padding = size.width * 0.05;
+    final fontScale = isTabletOrLarger ? 1.2 : 1.0;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
           'Assessment',
           style: GoogleFonts.roboto(
-            fontSize: 26,
+            fontSize: 26 * fontScale,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
+        centerTitle: isTabletOrLarger,
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -45,147 +51,204 @@ class AssessmentScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 20,
-            ),
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-              crossAxisAlignment:
-                  CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: FadeInUp(
-                    duration: const Duration(
-                      milliseconds: 900,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 800,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: padding,
+                      vertical: size.height * 0.02,
                     ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              botResponse,
-                              style: GoogleFonts.roboto(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                height: 1.6,
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: FadeInUp(
+                            duration: const Duration(
+                              milliseconds: 900,
+                            ),
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: EdgeInsets.all(
+                                  padding,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    Text(
+                                      botResponse,
+                                      style:
+                                          GoogleFonts.roboto(
+                                            fontSize:
+                                                20 *
+                                                fontScale,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .white,
+                                            height: 1.6,
+                                          ),
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          size.height *
+                                          0.02,
+                                    ),
+                                    _buildSection(
+                                      icon: Icons.summarize,
+                                      title: 'Summary',
+                                      content: summary,
+                                      textColor:
+                                          Colors.white,
+                                      fontScale: fontScale,
+                                      size: size,
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          size.height *
+                                          0.02,
+                                    ),
+                                    _buildSection(
+                                      icon: Icons.star,
+                                      title: 'Keep Up',
+                                      content: strengths,
+                                      textColor:
+                                          Colors
+                                              .greenAccent,
+                                      gradient:
+                                          const LinearGradient(
+                                            colors: [
+                                              Colors
+                                                  .greenAccent,
+                                              Colors
+                                                  .tealAccent,
+                                            ],
+                                          ),
+                                      fontScale: fontScale,
+                                      size: size,
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          size.height *
+                                          0.02,
+                                    ),
+                                    _buildSection(
+                                      icon: Icons.build,
+                                      title: 'Work On',
+                                      content: weaknesses,
+                                      textColor:
+                                          Colors
+                                              .yellowAccent,
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Colors
+                                              .yellowAccent,
+                                          Colors
+                                              .orangeAccent,
+                                        ],
+                                      ),
+                                      fontScale: fontScale,
+                                      size: size,
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          size.height *
+                                          0.02,
+                                    ),
+                                    _buildSection(
+                                      icon: Icons.lightbulb,
+                                      title: 'Tips',
+                                      content: suggestions,
+                                      textColor:
+                                          Colors.white,
+                                      fontScale: fontScale,
+                                      size: size,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            _buildSection(
-                              icon: Icons.summarize,
-                              title: 'Summary',
-                              content: summary,
-                              textColor: Colors.white,
-                            ),
-                            const SizedBox(height: 20),
-                            _buildSection(
-                              icon: Icons.star,
-                              title: 'Keep Up',
-                              content: strengths,
-                              textColor: Colors.greenAccent,
-                              gradient:
-                                  const LinearGradient(
-                                    colors: [
-                                      Colors.greenAccent,
-                                      Colors.tealAccent,
-                                    ],
-                                  ),
-                            ),
-                            const SizedBox(height: 20),
-                            _buildSection(
-                              icon: Icons.build,
-                              title: 'Work On',
-                              content: weaknesses,
-                              textColor:
-                                  Colors.yellowAccent,
-                              gradient:
-                                  const LinearGradient(
-                                    colors: [
-                                      Colors.yellowAccent,
-                                      Colors.orangeAccent,
-                                    ],
-                                  ),
-                            ),
-                            const SizedBox(height: 20),
-                            _buildSection(
-                              icon: Icons.lightbulb,
-                              title: 'Tips',
-                              content: suggestions,
-                              textColor: Colors.white,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: size.height * 0.03,
+                        ),
+                        ZoomIn(
+                          duration: const Duration(
+                            milliseconds: 1000,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.offAll(
+                                () =>
+                                    const NavigationMenu(),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    size.width * 0.1,
+                                vertical:
+                                    size.height * 0.02,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      12,
+                                    ),
+                              ),
+                              elevation: 5,
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  Colors.blueAccent,
+                              shadowColor: Colors.black
+                                  .withOpacity(0.3),
+                            ).copyWith(
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        states.contains(
+                                              MaterialState
+                                                  .pressed,
+                                            )
+                                            ? Colors
+                                                .blueAccent
+                                                .withOpacity(
+                                                  0.5,
+                                                )
+                                            : null,
+                                  ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Back to Menu',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 20 * fontScale,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                ZoomIn(
-                  duration: const Duration(
-                    milliseconds: 1000,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.offAll(
-                        () => const NavigationMenu(),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 18,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
-                      ),
-                      elevation: 5,
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.black.withOpacity(
-                        0.3,
-                      ),
-                    ).copyWith(
-                      backgroundColor:
-                          MaterialStateProperty.resolveWith(
-                            (states) {
-                              return Colors.blueAccent;
-                            },
-                          ),
-                      overlayColor:
-                          MaterialStateProperty.resolveWith(
-                            (states) {
-                              return states.contains(
-                                    MaterialState.pressed,
-                                  )
-                                  ? Colors.blueAccent
-                                      .withOpacity(0.5)
-                                  : null;
-                            },
-                          ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Back to Menu',
-                        style: GoogleFonts.roboto(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -198,12 +261,14 @@ class AssessmentScreen extends StatelessWidget {
     required String content,
     required Color textColor,
     LinearGradient? gradient,
+    required double fontScale,
+    required Size size,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: textColor, size: 28),
-        const SizedBox(width: 12),
+        Icon(icon, color: textColor, size: 28 * fontScale),
+        SizedBox(width: size.width * 0.03),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,7 +287,7 @@ class AssessmentScreen extends StatelessWidget {
                     child: Text(
                       title,
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
+                        fontSize: 18 * fontScale,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                         height: 1.6,
@@ -232,17 +297,17 @@ class AssessmentScreen extends StatelessWidget {
                   : Text(
                     title,
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 18 * fontScale,
                       fontWeight: FontWeight.w600,
                       color: textColor,
                       height: 1.6,
                     ),
                   ),
-              const SizedBox(height: 5),
+              SizedBox(height: size.height * 0.01),
               Text(
                 content,
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
+                  fontSize: 16 * fontScale,
                   color: textColor,
                   height: 1.5,
                 ),

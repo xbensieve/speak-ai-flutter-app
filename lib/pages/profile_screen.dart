@@ -70,6 +70,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth =
+        MediaQuery.of(context).size.width;
+    final double screenHeight =
+        MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SafeArea(
         child: Obx(() {
@@ -88,16 +93,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 physics:
                     const AlwaysScrollableScrollPhysics(),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.04,
+                    // 4% of screen width
+                    vertical:
+                        screenHeight *
+                        0.01, // 1% of screen height
                   ),
                   child: Column(
                     children: [
-                      _buildHeader(user),
-                      const SizedBox(height: 16),
+                      _buildHeader(
+                        user,
+                        screenWidth,
+                        screenHeight,
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
                       _buildOptionsList(),
-                      // Extra padding at the bottom
                     ],
                   ),
                 ),
@@ -108,7 +119,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text(
                 "No user info available",
                 style: GoogleFonts.roboto(
-                  fontSize: 18,
+                  fontSize: screenWidth * 0.045,
+                  // Responsive font size
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
@@ -120,10 +132,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader(user) {
+  Widget _buildHeader(
+    user,
+    double screenWidth,
+    double screenHeight,
+  ) {
     final now = DateTime(2025, 5, 31);
     final daysRemaining =
         user.premiumExpiredTime?.difference(now).inDays;
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         Align(
@@ -131,22 +148,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             'PROFILE',
             style: GoogleFonts.roboto(
-              fontSize: 25,
+              fontSize: screenWidth * 0.0625,
+              // Responsive font size (25/400)
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: screenHeight * 0.015),
         Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(
+                  screenWidth * 0.025,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(
+                    screenWidth * 0.05,
+                  ),
                   border: Border.all(
                     color: Colors.white24,
                     width: 2,
@@ -156,15 +178,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      "lib/assets/images/female-avatar.png",
-                      width: 400,
-                      height: 120,
+                      user.gender.toLowerCase() == "male"
+                          ? "lib/assets/images/male-avatar.png"
+                          : "lib/assets/images/female-avatar.png",
+                      width: size.width * 0.5,
+                      height: size.height * 0.15,
+                      fit:
+                          BoxFit
+                              .contain, // Ensure proper image scaling
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: screenHeight * 0.015),
                     Text(
                       user.userName,
                       style: GoogleFonts.roboto(
-                        fontSize: 25,
+                        fontSize: screenWidth * 0.0625,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -172,33 +199,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.03),
               Container(
-                padding: const EdgeInsets.all(10),
+                width: screenWidth * 0.9,
+                // Responsive container width
+                padding: EdgeInsets.all(
+                  screenWidth * 0.025,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(
+                    screenWidth * 0.05,
+                  ),
                   border: Border.all(
                     color: Colors.white24,
                     width: 2,
                   ),
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      daysRemaining != null
-                          ? 'Your plan: $daysRemaining Days Remaining'
-                          : 'Your plan: Free',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        color: Colors.white70,
+                    Flexible(
+                      child: Text(
+                        daysRemaining != null
+                            ? 'Your plan: $daysRemaining Days Remaining'
+                            : 'Your plan: Free',
+                        style: GoogleFonts.roboto(
+                          fontSize: screenWidth * 0.04,
+                          color: Colors.white70,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(
-                      width: 50,
-                    ), // space between text and button
-                    _buildGetAccountProButton(),
+                    SizedBox(width: screenWidth * 0.02),
+                    _buildGetAccountProButton(
+                      screenWidth,
+                      screenHeight,
+                    ),
                   ],
                 ),
               ),
@@ -271,31 +309,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildGetAccountProButton() {
+  Widget _buildGetAccountProButton(
+    double screenWidth,
+    double screenHeight,
+  ) {
     return ElevatedButton(
       onPressed: () {
         Get.to(() => const PremiumIntroPage());
       },
-
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 65,
-          vertical: 10,
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.1,
+          // Responsive padding
+          vertical: screenHeight * 0.015,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(
+            screenWidth * 0.03,
+          ),
           side: const BorderSide(
             color: Colors.yellow,
             width: 1.5,
           ),
         ),
         elevation: 2,
+        minimumSize: Size(
+          screenWidth * 0.3,
+          screenHeight * 0.05,
+        ), // Responsive size
       ),
       child: Text(
         'Upgrade',
         style: GoogleFonts.roboto(
-          fontSize: 16,
+          fontSize: screenWidth * 0.04,
           fontWeight: FontWeight.bold,
           color: Colors.yellow,
         ),

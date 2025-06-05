@@ -30,7 +30,9 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
       builder:
           (context) => Center(
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(
+                MediaQuery.of(context).size.width * 0.05,
+              ),
               child: const CupertinoActivityIndicator(
                 radius: 20,
                 color: Colors.white,
@@ -48,119 +50,149 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth =
+        MediaQuery.of(context).size.width;
+    final double screenHeight =
+        MediaQuery.of(context).size.height;
     final topics = _topicViewModel.getTopics();
+
+    // Determine crossAxisCount based on screen width
+    final int crossAxisCount =
+        screenWidth > 600
+            ? 3
+            : 2; // 3 columns for larger screens, 2 for smaller
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Role-play',
           style: GoogleFonts.roboto(
-            fontSize: 25,
+            fontSize: screenWidth * 0.06,
+            // Responsive font size
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         backgroundColor: Colors.transparent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.8,
-              ),
-          itemCount: topics.length,
-          itemBuilder: (context, index) {
-            final topicId = topics.keys.elementAt(index);
-            final topicData = topics[topicId]!;
-            final topicName = topicData['topic']!;
-            final imageUrl = topicData['image']!;
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(screenWidth * 0.04),
+          // Responsive padding
+          child: GridView.builder(
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: screenWidth * 0.025,
+                  mainAxisSpacing: screenHeight * 0.015,
+                  childAspectRatio:
+                      0.75, // Adjusted for better card proportions
+                ),
+            itemCount: topics.length,
+            itemBuilder: (context, index) {
+              final topicId = topics.keys.elementAt(index);
+              final topicData = topics[topicId]!;
+              final topicName = topicData['topic']!;
+              final imageUrl = topicData['image']!;
 
-            return GestureDetector(
-              onTap: () async {
-                if (_isLoading) return;
-                setState(() {
-                  _isLoading = true;
-                });
-                _showLoadingDialog();
-                final scenarioPrompt =
-                    await _fetchScenarioPrompt(topicId);
-                _hideLoadingDialog();
-                setState(() {
-                  _isLoading = false;
-                });
+              return GestureDetector(
+                onTap: () async {
+                  if (_isLoading) return;
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  _showLoadingDialog();
+                  final scenarioPrompt =
+                      await _fetchScenarioPrompt(topicId);
+                  _hideLoadingDialog();
+                  setState(() {
+                    _isLoading = false;
+                  });
 
-                if (scenarioPrompt != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ScenarioPromptScreen(
-                            topicId: topicId,
-                            scenarioPrompt: scenarioPrompt,
+                  if (scenarioPrompt != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                ScenarioPromptScreen(
+                                  topicId: topicId,
+                                  scenarioPrompt:
+                                      scenarioPrompt,
+                                ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Failed to load scenario',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      screenWidth * 0.03,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.vertical(
+                                top: Radius.circular(
+                                  screenWidth * 0.03,
+                                ),
+                              ),
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            // Maintain aspect ratio, no distortion
+                            width: double.infinity,
+                            height: screenHeight * 0.25,
+                            // Responsive height
+                            errorBuilder:
+                                (
+                                  context,
+                                  error,
+                                  stackTrace,
+                                ) => const Icon(
+                                  Icons.error,
+                                  size: 50,
+                                ),
                           ),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Failed to load scenario',
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: Card(
-                elevation: 4,
-                color: Colors.white.withOpacity(
-                  0.9,
-                ), // Slight transparency
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.vertical(
-                              top: Radius.circular(10),
-                            ),
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (
-                                context,
-                                error,
-                                stackTrace,
-                              ) => const Icon(Icons.error),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        topicName,
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.all(
+                          screenWidth * 0.02,
                         ),
-                        textAlign: TextAlign.center,
+                        child: Text(
+                          topicName,
+                          style: GoogleFonts.roboto(
+                            fontSize: screenWidth * 0.04,
+                            // Responsive font size
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

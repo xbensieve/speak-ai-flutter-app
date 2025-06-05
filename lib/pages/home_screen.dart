@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,258 +13,331 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final FlutterTts flutterTts = FlutterTts();
-  final List<String> messages = [
-    "Hi, Buddy!",
-    "What would you like to achieve today?",
-  ];
-  static bool _hasSpoken = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (!_hasSpoken) {
-      _speakWelcome();
-      _hasSpoken = true;
-    }
-  }
-
-  Future<void> _speakWelcome() async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.0);
-    await flutterTts.setSpeechRate(0.5);
-    await flutterTts.setVolume(1.0);
-    await flutterTts.speak(
-      "Hi, Buddy! What would you like to achieve today?",
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isTabletOrLarger = size.width >= 600;
+    final padding = size.width * 0.05;
+    final fontScale = isTabletOrLarger ? 1.2 : 1.0;
     final NavigationController navController =
         Get.find<NavigationController>();
 
     return Scaffold(
       drawer: Drawer(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
-          side: BorderSide.none,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
         ),
         backgroundColor: const Color(0xFF1F1F39),
         elevation: 0,
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(padding),
           child: ListView(
             children: [
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.home_filled,
                   color: Colors.greenAccent,
-                  size: 40,
+                  size: size.width * 0.08 * fontScale,
                 ),
                 title: Text(
                   'Home',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                    fontSize: size.width * 0.05 * fontScale,
                   ),
                 ),
                 onTap: () {
-                  navController.onDestinationSelected(
-                    1,
-                  ); // Navigate to Courses
-                  Navigator.pop(
-                    context,
-                  ); // Close the drawer
+                  navController.onDestinationSelected(1);
+                  Navigator.pop(context);
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: size.height * 0.015),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.book,
                   color: Colors.purpleAccent,
-                  size: 40,
+                  size: size.width * 0.08 * fontScale,
                 ),
                 title: Text(
                   'Courses',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                    fontSize: size.width * 0.05 * fontScale,
                   ),
                 ),
                 onTap: () {
-                  navController.onDestinationSelected(
-                    1,
-                  ); // Navigate to Courses
-                  Navigator.pop(
-                    context,
-                  ); // Close the drawer
+                  navController.onDestinationSelected(1);
+                  Navigator.pop(context);
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: size.height * 0.015),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.school_rounded,
                   color: Colors.blueAccent,
-                  size: 40,
+                  size: size.width * 0.08 * fontScale,
                 ),
                 title: Text(
                   'Learn',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                    fontSize: size.width * 0.05 * fontScale,
                   ),
                 ),
                 onTap: () {
-                  navController.onDestinationSelected(
-                    2,
-                  ); // Navigate to Learn
-                  Navigator.pop(
-                    context,
-                  ); // Close the drawer
+                  navController.onDestinationSelected(2);
+                  Navigator.pop(context);
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: size.height * 0.015),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.person_rounded,
                   color: Colors.orangeAccent,
-                  size: 40,
+                  size: size.width * 0.08 * fontScale,
                 ),
                 title: Text(
                   'Profile',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                    fontSize: size.width * 0.05 * fontScale,
                   ),
                 ),
                 onTap: () {
-                  navController.onDestinationSelected(
-                    4,
-                  ); // Navigate to Profile
-                  Navigator.pop(
-                    context,
-                  ); // Close the drawer
+                  navController.onDestinationSelected(4);
+                  Navigator.pop(context);
                 },
               ),
             ],
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Column(
-            children: [
-              const HeaderWidget(),
-              Image.asset(
-                'lib/assets/images/bunny-3d.png',
-                width: 300,
-                height: 300,
-                fit: BoxFit.contain,
-              ),
-              // Chat messages
-              Expanded(
-                child: ListView.builder(
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    return Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 6,
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          messages[index],
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 600,
+                ),
+                // Cap width for large screens
+                child: Padding(
+                  padding: EdgeInsets.all(padding),
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.stretch,
+                    children: [
+                      const HeaderWidget(),
+                      SizedBox(height: size.height * 0.03),
+                      Image.asset(
+                        'lib/assets/animations/zebra-animation.gif',
+                        width: size.width * 0.5,
+                        height: size.height * 0.25,
+                        fit: BoxFit.contain,
                       ),
-                    );
-                  },
+                      SizedBox(height: size.height * 0.04),
+                      Column(
+                        children: [
+                          OptionButton(
+                            label: "Courses",
+                            icon: Icons.menu_book_sharp,
+                            onPressed:
+                                () => navController
+                                    .onDestinationSelected(
+                                      1,
+                                    ),
+                            screenWidth: size.width,
+                            screenHeight: size.height,
+                            backgroundColor: Colors
+                                .greenAccent
+                                .withOpacity(0.2),
+                            splashColor: Colors.greenAccent
+                                .withOpacity(0.4),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.015,
+                          ),
+                          OptionButton(
+                            label: "Talk",
+                            icon: Icons.chat_outlined,
+                            onPressed:
+                                () => navController
+                                    .onDestinationSelected(
+                                      3,
+                                    ),
+                            screenWidth: size.width,
+                            screenHeight: size.height,
+                            backgroundColor: Colors
+                                .blueAccent
+                                .withOpacity(0.2),
+                            splashColor: Colors.blueAccent
+                                .withOpacity(0.4),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.015,
+                          ),
+                          OptionButton(
+                            label: "Role Play",
+                            icon:
+                                Icons
+                                    .record_voice_over_outlined,
+                            onPressed:
+                                () => navController
+                                    .onDestinationSelected(
+                                      3,
+                                    ),
+                            screenWidth: size.width,
+                            screenHeight: size.height,
+                            backgroundColor: Colors
+                                .purpleAccent
+                                .withOpacity(0.2),
+                            splashColor: Colors.purpleAccent
+                                .withOpacity(0.4),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Column(
-                children: [
-                  OptionButton(
-                    label: "Courses",
-                    icon: Icons.menu_book_sharp,
-                    onPressed:
-                        () => navController
-                            .onDestinationSelected(1),
-                  ),
-                  OptionButton(
-                    label: "Talk",
-                    icon: Icons.chat_outlined,
-                    onPressed:
-                        () => navController
-                            .onDestinationSelected(3),
-                  ),
-                  OptionButton(
-                    label: "Role Play",
-                    icon: Icons.record_voice_over_outlined,
-                    onPressed:
-                        () => navController
-                            .onDestinationSelected(3),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class OptionButton extends StatelessWidget {
+class OptionButton extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onPressed;
+  final double screenWidth;
+  final double screenHeight;
+  final Color backgroundColor;
+  final Color splashColor;
 
   const OptionButton({
     required this.label,
     required this.icon,
     required this.onPressed,
+    required this.screenWidth,
+    required this.screenHeight,
+    required this.backgroundColor,
+    required this.splashColor,
     super.key,
   });
 
   @override
+  State<OptionButton> createState() => _OptionButtonState();
+}
+
+class _OptionButtonState extends State<OptionButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isTabletOrLarger = widget.screenWidth >= 600;
+    final fontScale = isTabletOrLarger ? 1.2 : 1.0;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(50),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-            side: const BorderSide(color: Colors.white),
+      padding: EdgeInsets.symmetric(
+        vertical: widget.screenHeight * 0.01,
+      ),
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: child,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor,
+            borderRadius: BorderRadius.circular(
+              widget.screenWidth * 0.06,
+            ),
+            border: Border.all(color: Colors.white),
           ),
-        ),
-        icon: Icon(icon, color: Colors.white),
-        label: Text(
-          label,
-          style: GoogleFonts.roboto(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(
+                widget.screenWidth * 0.06,
+              ),
+              onTap: widget.onPressed,
+              onTapDown: (_) => _controller.forward(),
+              onTapUp: (_) => _controller.reverse(),
+              onTapCancel: () => _controller.reverse(),
+              splashColor: widget.splashColor,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: widget.screenHeight * 0.015,
+                  horizontal: widget.screenWidth * 0.04,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      widget.icon,
+                      color: Colors.white,
+                      size:
+                          widget.screenWidth *
+                          0.08 *
+                          fontScale,
+                    ),
+                    SizedBox(
+                      width: widget.screenWidth * 0.03,
+                    ),
+                    Text(
+                      widget.label,
+                      style: GoogleFonts.roboto(
+                        fontSize:
+                            widget.screenWidth *
+                            0.045 *
+                            fontScale,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

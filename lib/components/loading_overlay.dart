@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
@@ -19,7 +19,12 @@ class LoadingOverlay extends StatelessWidget {
         if (isLoading)
           Container(
             color: Colors.black54,
-            child: const Center(child: CupertinoActivityIndicator(radius: 20)),
+            child: const Center(
+              child: CupertinoActivityIndicator(
+                radius: 20,
+                color: Colors.white,
+              ),
+            ),
           ),
       ],
     );

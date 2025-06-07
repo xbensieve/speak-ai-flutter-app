@@ -10,6 +10,16 @@ import "../../models/user_model.dart";
 abstract class IApiService {
   Future<LoginResponse> login(LoginRequest request);
 
+  Future<LoginResponse> registerCustomer({
+    required String userName,
+    required String password,
+    required String confirmedPassword,
+    required String email,
+    required String fullName,
+    required String birthday,
+    required String gender,
+  });
+
   Future<LoginResponse> loginWithGoogle(String idToken);
 
   Future<ResponseModel<UserModel>> getUserInfo();
@@ -18,4 +28,8 @@ abstract class IApiService {
   getCourses(QueryModel query);
 
   Future<String?> getScenarioByTopicId(int topicId);
+
+  Future<ResponseModel<CourseModel>?> getCourseById(
+    String courseId,
+  );
 }

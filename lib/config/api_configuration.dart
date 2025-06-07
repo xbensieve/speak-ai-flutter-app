@@ -1,6 +1,8 @@
 class ApiConfig {
   static const String baseUrl = 'http://sai.runasp.net';
   static const String loginEndpoint = '/api/auth/login';
+  static const String registerCustomerEndpoint =
+      '/api/auth/register/customer';
   static const String loginGoogleEndpoint =
       '/api/auth/signin-google';
   static const String userInfoEndpoint = '/api/users';
@@ -11,5 +13,4 @@ class ApiConfig {
       '/api/courses/';
   static const String checkEnrolledCourseEndpoint =
       '/api/courses/users';
-  static const String enrollCourseEndpoint = '/api/courses';
 }

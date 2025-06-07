@@ -1,3 +1,4 @@
+import 'package:english_app_with_ai/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -422,7 +423,18 @@ class _LoginPageState extends State<LoginPage>
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          //Get.to(() => RegisterPage());
+                                          Get.off(
+                                            () =>
+                                                RegisterScreen(),
+                                            transition:
+                                                Transition
+                                                    .rightToLeft,
+                                            duration:
+                                                const Duration(
+                                                  milliseconds:
+                                                      300,
+                                                ),
+                                          );
                                         },
                                         child: Text(
                                           "Register now",

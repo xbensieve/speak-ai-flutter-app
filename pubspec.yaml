@@ -47,6 +47,7 @@ dependencies:
   signalr_netcore: ^1.4.3
   flutter_dotenv: ^5.2.1
   shared_preferences: ^2.3.0
+  intl: ^0.20.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

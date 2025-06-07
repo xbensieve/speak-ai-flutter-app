@@ -42,6 +42,44 @@ class ApiService implements IApiService {
   }
 
   @override
+  Future<LoginResponse> registerCustomer({
+    required String userName,
+    required String password,
+    required String confirmedPassword,
+    required String email,
+    required String fullName,
+    required String birthday,
+    required String gender,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+          '${ApiConfig.baseUrl}${ApiConfig.registerCustomerEndpoint}',
+        ),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'userName': userName,
+          'password': password,
+          'confirmedPassword': confirmedPassword,
+          'email': email,
+          'fullName': fullName,
+          'birthday': birthday,
+          'gender': gender,
+        }),
+      );
+      if (response.statusCode == 200) {
+        return LoginResponse.fromJson(
+          jsonDecode(response.body),
+        );
+      } else {
+        throw Exception('Registration failed');
+      }
+    } catch (e) {
+      throw Exception('Registration error: $e');
+    }
+  }
+
+  @override
   Future<ResponseModel<UserModel>> getUserInfo() async {
     final tokenData = getDecodedAccessToken();
     if (tokenData == null) throw Exception('Invalid token');
@@ -170,6 +208,31 @@ class ApiService implements IApiService {
       }
     } catch (e) {
       throw Exception('Failed to load scenario: $e');
+    }
+  }
+
+  @override
+  Future<ResponseModel<CourseModel>?> getCourseById(
+    String courseId,
+  ) async {
+    if (courseId == null) {
+      throw Exception("CourseId cannot null");
+    }
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.getCourseByIdEndpoint}$courseId',
+    );
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return ResponseModel<CourseModel>.fromJson(
+          jsonData,
+          (data) => CourseModel.fromJson(data),
+        );
+      }
+      return null;
+    } catch (e) {
+      throw Exception('Failed to load course: $e');
     }
   }
 }

@@ -304,4 +304,52 @@ class ApiService implements IApiService {
       throw Exception('Failed to confirm payment: $e');
     }
   }
+
+  @override
+  Future<String?> checkEnrolledCourse(
+    String courseId,
+  ) async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.checkEnrolledCourseEndpoint}/$userId/courses/$courseId/enrollment-status',
+    );
+    try {
+      final response = await http.get(url);
+      final jsonData = jsonDecode(response.body);
+      if (jsonData['result'] == null) {
+        return null;
+      }
+      return jsonData['result']['enrolledCourseId'];
+    } catch (e) {
+      throw Exception(
+        'Failed to check enrolled course: $e',
+      );
+    }
+  }
+
+  @override
+  Future<bool> enrollCourse(String courseId) async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.enrollCourseEndpoint}/$courseId/enrollments',
+    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(userId),
+      );
+      if (response.statusCode == 201 ||
+          response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw Exception('Failed to enroll course: $e');
+    }
+  }
 }

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/course_model.dart';
+import 'course_detail_screen.dart';
 
 class CourseScreen extends StatelessWidget {
   const CourseScreen({super.key});
@@ -147,17 +148,9 @@ class CourseScreen extends StatelessWidget {
                           12,
                         ),
                         onTap: () {
-                          Get.snackbar(
-                            'Course Selected',
-                            '${course.courseName} (Level: ${getLevelName(course.levelId)})',
-                            backgroundColor: Color(
-                              0xFF6A89FF,
-                            ),
-                            colorText: Colors.white,
-                            snackPosition:
-                                SnackPosition.BOTTOM,
-                            duration: const Duration(
-                              seconds: 2,
+                          Get.to(
+                            () => CourseDetailPage(
+                              courseId: course.id,
                             ),
                           );
                         },

@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:english_app_with_ai/config/api_configuration.dart";
 import "package:english_app_with_ai/models/course_model.dart";
 import "package:english_app_with_ai/models/course_response_model.dart";
+import "package:english_app_with_ai/models/enrolled_course_model.dart";
 import "package:english_app_with_ai/models/login_request.dart";
 import "package:english_app_with_ai/models/login_response.dart";
 import "package:english_app_with_ai/models/query_model.dart";
@@ -350,6 +351,37 @@ class ApiService implements IApiService {
       return false;
     } catch (e) {
       throw Exception('Failed to enroll course: $e');
+    }
+  }
+
+  @override
+  Future<ResponseModel<List<EnrolledCourseModel>>>
+  getEnrolledCourses() async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.getEnrolledCoursesEndpoint}/$userId/enrolled-courses',
+    );
+    try {
+      final response = await http.get(url);
+
+      final jsonData = jsonDecode(response.body);
+
+      return ResponseModel<List<EnrolledCourseModel>>(
+        statusCode: jsonData['statusCode'],
+        message: jsonData['message'],
+        isSuccess: jsonData['isSuccess'],
+        result:
+            (jsonData['result'] as List)
+                .map(
+                  (item) =>
+                      EnrolledCourseModel.fromJson(item),
+                )
+                .toList(),
+      );
+    } catch (e) {
+      throw Exception('Failed to get enrolled courses: $e');
     }
   }
 }

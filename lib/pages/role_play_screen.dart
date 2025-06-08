@@ -56,37 +56,34 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
         MediaQuery.of(context).size.height;
     final topics = _topicViewModel.getTopics();
 
-    // Determine crossAxisCount based on screen width
-    final int crossAxisCount =
-        screenWidth > 600
-            ? 3
-            : 2; // 3 columns for larger screens, 2 for smaller
+    final int crossAxisCount = screenWidth > 600 ? 3 : 2;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      // Allow body to extend behind AppBar
       appBar: AppBar(
         title: Text(
           'Role-play',
           style: GoogleFonts.roboto(
             fontSize: screenWidth * 0.06,
-            // Responsive font size
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         backgroundColor: Colors.transparent,
+        // Transparent background
+        elevation: 0, // Remove shadow
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.04),
-          // Responsive padding
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: screenWidth * 0.025,
                   mainAxisSpacing: screenHeight * 0.015,
-                  childAspectRatio:
-                      0.75, // Adjusted for better card proportions
+                  childAspectRatio: 0.75,
                 ),
             itemCount: topics.length,
             itemBuilder: (context, index) {
@@ -141,6 +138,8 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
                       screenWidth * 0.03,
                     ),
                   ),
+                  color: Colors.white,
+                  // Card background for contrast
                   child: Column(
                     children: [
                       Expanded(
@@ -154,10 +153,8 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
                           child: Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
-                            // Maintain aspect ratio, no distortion
                             width: double.infinity,
                             height: screenHeight * 0.25,
-                            // Responsive height
                             errorBuilder:
                                 (
                                   context,
@@ -178,7 +175,6 @@ class _RolePlayScreenState extends State<RolePlayScreen> {
                           topicName,
                           style: GoogleFonts.roboto(
                             fontSize: screenWidth * 0.04,
-                            // Responsive font size
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),

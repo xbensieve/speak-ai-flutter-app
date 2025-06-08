@@ -1,16 +1,13 @@
 import 'package:english_app_with_ai/pages/login_page.dart';
-import 'package:english_app_with_ai/pages/premium_intro_screen.dart';
+import 'package:english_app_with_ai/pages/payment_url_webview.dart';
 import 'package:english_app_with_ai/view_models/login_view_model.dart';
 import 'package:english_app_with_ai/view_models/user_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-final Uri _url = Uri.parse(
-  'https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=03',
-);
+import '../view_models/payment_view_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,12 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _loadUser() {
     userViewModel.fetchUserInfo();
-  }
-
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(_url)) {
-      throw Exception('Could not launch $_url');
-    }
   }
 
   void _logout() {
@@ -68,6 +59,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => Center(
+            child: Container(
+              padding: EdgeInsets.all(
+                MediaQuery.of(context).size.width * 0.05,
+              ),
+              child: const CupertinoActivityIndicator(
+                radius: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth =
@@ -95,10 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.04,
-                    // 4% of screen width
-                    vertical:
-                        screenHeight *
-                        0.01, // 1% of screen height
+                    vertical: screenHeight * 0.01,
                   ),
                   child: Column(
                     children: [
@@ -149,7 +156,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'PROFILE',
             style: GoogleFonts.roboto(
               fontSize: screenWidth * 0.0625,
-              // Responsive font size (25/400)
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -183,9 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : "lib/assets/images/female-avatar.png",
                       width: size.width * 0.5,
                       height: size.height * 0.15,
-                      fit:
-                          BoxFit
-                              .contain, // Ensure proper image scaling
+                      fit: BoxFit.contain,
                     ),
                     SizedBox(height: screenHeight * 0.015),
                     Text(
@@ -202,7 +206,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: screenHeight * 0.03),
               Container(
                 width: screenWidth * 0.9,
-                // Responsive container width
                 padding: EdgeInsets.all(
                   screenWidth * 0.025,
                 ),
@@ -223,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Flexible(
                       child: Text(
                         daysRemaining != null
-                            ? 'Your plan: $daysRemaining Days Remaining'
+                            ? 'Your plan: $daysRemaining Days'
                             : 'Your plan: Free',
                         style: GoogleFonts.roboto(
                           fontSize: screenWidth * 0.04,
@@ -232,11 +235,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    SizedBox(width: screenWidth * 0.02),
-                    _buildGetAccountProButton(
-                      screenWidth,
-                      screenHeight,
-                    ),
+                    if (!user.isPremium)
+                      _buildGetAccountProButton(
+                        screenWidth,
+                        screenHeight,
+                      ),
                   ],
                 ),
               ),
@@ -313,38 +316,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double screenWidth,
     double screenHeight,
   ) {
-    return ElevatedButton(
-      onPressed: () {
-        Get.to(() => const PremiumIntroPage());
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.1,
-          // Responsive padding
-          vertical: screenHeight * 0.015,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            screenWidth * 0.03,
+    final paymentViewModel = Get.put(PaymentViewModel());
+
+    return Obx(
+      () => ElevatedButton(
+        onPressed:
+            paymentViewModel.isLoading.value
+                ? null
+                : () async {
+                  _showLoadingDialog(Get.context!);
+                  final paymentUrl =
+                      await paymentViewModel
+                          .processPayment();
+
+                  Get.back();
+                  if (paymentUrl != null) {
+                    Get.to(
+                      () => PaymentWebView(url: paymentUrl),
+                    );
+                  }
+                },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.1,
+            vertical: screenHeight * 0.015,
           ),
-          side: const BorderSide(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              screenWidth * 0.03,
+            ),
+            side: const BorderSide(
+              color: Colors.yellow,
+              width: 1.5,
+            ),
+          ),
+          elevation: 2,
+          minimumSize: Size(
+            screenWidth * 0.3,
+            screenHeight * 0.05,
+          ),
+        ),
+        child: Text(
+          'Upgrade',
+          style: GoogleFonts.roboto(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.bold,
             color: Colors.yellow,
-            width: 1.5,
           ),
-        ),
-        elevation: 2,
-        minimumSize: Size(
-          screenWidth * 0.3,
-          screenHeight * 0.05,
-        ), // Responsive size
-      ),
-      child: Text(
-        'Upgrade',
-        style: GoogleFonts.roboto(
-          fontSize: screenWidth * 0.04,
-          fontWeight: FontWeight.bold,
-          color: Colors.yellow,
         ),
       ),
     );

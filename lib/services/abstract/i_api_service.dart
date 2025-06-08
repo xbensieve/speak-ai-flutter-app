@@ -32,4 +32,13 @@ abstract class IApiService {
   Future<ResponseModel<CourseModel>?> getCourseById(
     String courseId,
   );
+
+  Future<String?> createOrder();
+
+  Future<String?> createPayment(
+    String orderId,
+    String paymentMethod,
+  );
+
+  Future<bool> confirmPayment(String orderId);
 }

@@ -1,13 +1,35 @@
+import 'package:english_app_with_ai/pages/payment_url_webview.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../components/my_button.dart';
+import '../view_models/payment_view_model.dart';
 
 class PremiumIntroPage extends StatelessWidget {
   const PremiumIntroPage({super.key});
 
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => Center(
+            child: Container(
+              padding: EdgeInsets.all(
+                MediaQuery.of(context).size.width * 0.05,
+              ),
+              child: const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.white,
+                ),
+              ),
+            ),
+          ),
+    );
+  }
+
   void _upgradeToPremium() {
+    final paymentViewModel = Get.put(PaymentViewModel());
     Get.defaultDialog(
       title: 'Confirmation',
       titleStyle: GoogleFonts.roboto(
@@ -17,15 +39,32 @@ class PremiumIntroPage extends StatelessWidget {
       ),
       middleText:
           'Do you want to upgrade your account for 100,000 VND/month and unlock all premium courses?',
-      middleTextStyle: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
+      middleTextStyle: GoogleFonts.roboto(
+        fontSize: 16,
+        color: Colors.black,
+      ),
       textConfirm: 'Upgrade',
       textCancel: 'Cancel',
       confirmTextColor: Colors.white,
       cancelTextColor: Colors.blue,
       backgroundColor: Colors.white,
       buttonColor: Colors.blue,
-      onConfirm: () {
+      onConfirm: () async {
         Get.back();
+        _showLoadingDialog(Get.context!);
+        final paymentUrl =
+            await paymentViewModel.processPayment();
+        Get.back();
+        if (paymentUrl != null) {
+          Get.to(() => PaymentWebView(url: paymentUrl));
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to process payment. Please try again.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
       },
       onCancel: () => Get.back(),
     );
@@ -53,10 +92,21 @@ class PremiumIntroPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 24,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
         body: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 16,
+            ),
             child: Column(
               children: [
                 Icon(
@@ -87,7 +137,8 @@ class PremiumIntroPage extends StatelessWidget {
                 Column(
                   children: const [
                     FeatureItem(
-                      text: 'Unlimited access to all premium courses.',
+                      text:
+                          'Unlimited access to all premium courses.',
                     ),
                     SizedBox(height: 15),
                     FeatureItem(
@@ -95,12 +146,17 @@ class PremiumIntroPage extends StatelessWidget {
                           'Exclusive access to advanced materials and exercises.',
                     ),
                     SizedBox(height: 15),
-                    FeatureItem(text: 'Priority support from instructors.'),
+                    FeatureItem(
+                      text:
+                          'Priority support from instructors.',
+                    ),
                   ],
                 ),
                 const SizedBox(height: 35),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(15),
@@ -112,7 +168,9 @@ class PremiumIntroPage extends StatelessWidget {
                         _upgradeToPremium();
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                        ),
                         child: Center(
                           child: Text(
                             "Upgrade now",
@@ -138,6 +196,7 @@ class PremiumIntroPage extends StatelessWidget {
 
 class FeatureItem extends StatelessWidget {
   final String text;
+
   const FeatureItem({super.key, required this.text});
 
   @override
@@ -145,7 +204,11 @@ class FeatureItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.check_circle, color: Colors.greenAccent, size: 20),
+        const Icon(
+          Icons.check_circle,
+          color: Colors.greenAccent,
+          size: 20,
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(

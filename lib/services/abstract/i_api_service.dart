@@ -33,6 +33,10 @@ abstract class IApiService {
     String courseId,
   );
 
+  Future<String?> checkEnrolledCourse(String courseId);
+
+  Future<bool> enrollCourse(String courseId);
+
   Future<String?> createOrder();
 
   Future<String?> createPayment(

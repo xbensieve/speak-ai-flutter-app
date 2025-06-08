@@ -1,5 +1,5 @@
 import 'package:english_app_with_ai/pages/login_page.dart';
-import 'package:english_app_with_ai/pages/payment_url_webview.dart';
+import 'package:english_app_with_ai/pages/premium_intro_screen.dart';
 import 'package:english_app_with_ai/view_models/login_view_model.dart';
 import 'package:english_app_with_ai/view_models/user_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,25 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Get.offAll(() => const LoginPage());
       },
       onCancel: () => {},
-    );
-  }
-
-  void _showLoadingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => Center(
-            child: Container(
-              padding: EdgeInsets.all(
-                MediaQuery.of(context).size.width * 0.05,
-              ),
-              child: const CupertinoActivityIndicator(
-                radius: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
     );
   }
 
@@ -318,52 +299,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ) {
     final paymentViewModel = Get.put(PaymentViewModel());
 
-    return Obx(
-      () => ElevatedButton(
-        onPressed:
-            paymentViewModel.isLoading.value
-                ? null
-                : () async {
-                  _showLoadingDialog(Get.context!);
-                  final paymentUrl =
-                      await paymentViewModel
-                          .processPayment();
-
-                  Get.back();
-                  if (paymentUrl != null) {
-                    Get.to(
-                      () => PaymentWebView(url: paymentUrl),
-                    );
-                  }
-                },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.1,
-            vertical: screenHeight * 0.015,
+    return ElevatedButton(
+      onPressed: () {
+        Get.to(() => const PremiumIntroPage());
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.1,
+          vertical: screenHeight * 0.015,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            screenWidth * 0.03,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              screenWidth * 0.03,
-            ),
-            side: const BorderSide(
-              color: Colors.yellow,
-              width: 1.5,
-            ),
-          ),
-          elevation: 2,
-          minimumSize: Size(
-            screenWidth * 0.3,
-            screenHeight * 0.05,
+          side: const BorderSide(
+            color: Colors.yellow,
+            width: 1.5,
           ),
         ),
-        child: Text(
-          'Upgrade',
-          style: GoogleFonts.roboto(
-            fontSize: screenWidth * 0.04,
-            fontWeight: FontWeight.bold,
-            color: Colors.yellow,
-          ),
+        elevation: 2,
+        minimumSize: Size(
+          screenWidth * 0.3,
+          screenHeight * 0.05,
+        ),
+      ),
+      child: Text(
+        'Upgrade',
+        style: GoogleFonts.roboto(
+          fontSize: screenWidth * 0.04,
+          fontWeight: FontWeight.bold,
+          color: Colors.yellow,
         ),
       ),
     );

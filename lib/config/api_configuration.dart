@@ -13,6 +13,7 @@ class ApiConfig {
       '/api/courses/';
   static const String checkEnrolledCourseEndpoint =
       '/api/courses/users';
+  static const String enrollCourseEndpoint = '/api/courses';
   static const String createOrderEndpoint =
       '/api/premium/upgrade';
   static const String createPaymentEndpoint =

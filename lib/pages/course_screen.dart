@@ -33,251 +33,71 @@ class CourseScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Courses",
+          'Courses',
           style: GoogleFonts.roboto(
+            fontWeight: FontWeight.bold,
             fontSize: 25,
             color: Colors.white,
-            fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.transparent,
+        elevation: 1,
       ),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh:
-              () async => courseViewModel.fetchCourses(),
-          child: Obx(() {
-            if (courseViewModel.isLoading.value) {
-              return const Center(
-                child: CupertinoActivityIndicator(
-                  radius: 20,
-                  color: Colors.white,
-                ),
-              );
-            }
-            if (courseViewModel.error.isNotEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Error: ${courseViewModel.error.value}',
-                        style: TextStyle(
-                          color: Colors.red[700],
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed:
-                            () =>
-                                courseViewModel
-                                    .fetchCourses(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[700],
-                        ),
-                        child: const Text(
-                          'Retry',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+        child: Padding(
+          padding: EdgeInsets.all(
+            MediaQuery.of(context).size.width * 0.04,
+          ),
+          child: RefreshIndicator(
+            onRefresh:
+                () async => courseViewModel.fetchCourses(),
+            child: Obx(() {
+              if (courseViewModel.isLoading.value) {
+                return const Center(
+                  child: CupertinoActivityIndicator(
+                    color: Colors.white,
+                    radius: 20,
                   ),
-                ),
-              );
-            }
-
-            if (courseViewModel.courses.isEmpty) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'No courses found.',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              );
-            }
-
-            return GridView.builder(
-              padding: const EdgeInsets.all(12),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio:
-                        0.66, // Slightly increased for extra space
-                  ),
-              itemCount: courseViewModel.courses.length,
-              itemBuilder: (context, index) {
-                final CourseModel course =
-                    courseViewModel.courses[index];
-                return Card(
-                  color: Colors.transparent,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: Colors.white,
-                      width: 1.2,
-                    ),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () {
-                      Get.snackbar(
-                        'Course Selected',
-                        '${course.courseName} (Level: ${getLevelName(course.levelId)})',
-                        backgroundColor: Colors.blue[700],
-                        colorText: Colors.white,
-                      );
-                    },
+                );
+              }
+              if (courseViewModel.error.isNotEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
-                        // Image and Premium Icon
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.only(
-                                    topLeft:
-                                        Radius.circular(12),
-                                    topRight:
-                                        Radius.circular(12),
-                                  ),
-                              child:
-                                  course.imageUrl.isNotEmpty
-                                      ? Image.network(
-                                        course.imageUrl,
-                                        width:
-                                            double.infinity,
-                                        height: 150,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (
-                                              context,
-                                              error,
-                                              stackTrace,
-                                            ) => Container(
-                                              width:
-                                                  double
-                                                      .infinity,
-                                              height: 150,
-                                              color:
-                                                  Colors
-                                                      .grey[300],
-                                              child: const Icon(
-                                                Icons
-                                                    .image_not_supported,
-                                                size: 40,
-                                                color:
-                                                    Colors
-                                                        .grey,
-                                              ),
-                                            ),
-                                      )
-                                      : Container(
-                                        width:
-                                            double.infinity,
-                                        height: 150,
-                                        color:
-                                            Colors
-                                                .grey[300],
-                                        child: const Icon(
-                                          Icons
-                                              .image_not_supported,
-                                          size: 40,
-                                          color:
-                                              Colors.grey,
-                                        ),
-                                      ),
-                            ),
-                            // Premium Icon
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white
-                                      .withOpacity(0.8),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  course.isPremium
-                                      ? Icons.lock
-                                      : Icons.lock_open,
-                                  color:
-                                      course.isPremium
-                                          ? Colors
-                                              .amber[700]
-                                          : Colors
-                                              .green[700],
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Error: ${courseViewModel.error.value}',
+                          style: TextStyle(
+                            color: Colors.red[500],
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        // Course Name and Level, wrapped in Expanded
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                              6.0,
+                        const SizedBox(height: 15),
+                        OutlinedButton(
+                          onPressed:
+                              () =>
+                                  courseViewModel
+                                      .fetchCourses(),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.white,
                             ),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  course.courseName,
-                                  style: GoogleFonts.roboto(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                  maxLines: 2,
-                                  overflow:
-                                      TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 2,
-                                      ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue[200],
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          6,
-                                        ),
-                                  ),
-                                  child: Text(
-                                    'Level: ${getLevelName(course.levelId)}',
-                                    style:
-                                        GoogleFonts.roboto(
-                                          fontSize: 10,
-                                          color:
-                                              Colors
-                                                  .blue[900],
-                                        ),
-                                  ),
-                                ),
-                                // Add a small spacer to absorb any leftover space
-                                const SizedBox(height: 2),
-                              ],
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Try Again',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -285,9 +105,222 @@ class CourseScreen extends StatelessWidget {
                     ),
                   ),
                 );
-              },
-            );
-          }),
+              }
+
+              if (courseViewModel.courses.isEmpty) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'No courses available.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: courseViewModel.courses.length,
+                itemBuilder: (context, index) {
+                  final CourseModel course =
+                      courseViewModel.courses[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 12,
+                    ),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
+                      ),
+                      color: Colors.white,
+                      // Card remains white for contrast
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ),
+                        onTap: () {
+                          Get.snackbar(
+                            'Course Selected',
+                            '${course.courseName} (Level: ${getLevelName(course.levelId)})',
+                            backgroundColor: Color(
+                              0xFF6A89FF,
+                            ),
+                            colorText: Colors.white,
+                            snackPosition:
+                                SnackPosition.BOTTOM,
+                            duration: const Duration(
+                              seconds: 2,
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.horizontal(
+                                    left: Radius.circular(
+                                      12,
+                                    ),
+                                  ),
+                              child:
+                                  course.imageUrl.isNotEmpty
+                                      ? Image.network(
+                                        course.imageUrl,
+                                        width: 120,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) => Container(
+                                              width: 120,
+                                              height: 100,
+                                              color:
+                                                  Colors
+                                                      .grey[300],
+                                              child: const Icon(
+                                                Icons
+                                                    .image_not_supported,
+                                                size: 30,
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                              ),
+                                            ),
+                                      )
+                                      : Container(
+                                        width: 120,
+                                        height: 100,
+                                        color:
+                                            Colors
+                                                .grey[300],
+                                        child: const Icon(
+                                          Icons
+                                              .image_not_supported,
+                                          size: 30,
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                      ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      12,
+                                    ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    Text(
+                                      course.courseName,
+                                      style: GoogleFonts.poppins(
+                                        fontWeight:
+                                            FontWeight.w600,
+                                        fontSize: 16,
+                                        color:
+                                            Colors
+                                                .blue[900],
+                                      ),
+                                      maxLines: 2,
+                                      overflow:
+                                          TextOverflow
+                                              .ellipsis,
+                                    ),
+                                    const SizedBox(
+                                      height: 6,
+                                    ),
+                                    Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                      decoration: BoxDecoration(
+                                        color: Color(
+                                          0xFF6A89FF,
+                                        ).withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              6,
+                                            ),
+                                      ),
+                                      child: Text(
+                                        'Level: ${getLevelName(course.levelId)}',
+                                        style:
+                                            GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              color: Color(
+                                                0xFF6A89FF,
+                                              ),
+                                              fontWeight:
+                                                  FontWeight
+                                                      .w500,
+                                            ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          course.isPremium
+                                              ? Icons.lock
+                                              : Icons
+                                                  .lock_open,
+                                          size: 16,
+                                          color:
+                                              course.isPremium
+                                                  ? Colors
+                                                      .amber[700]
+                                                  : Colors
+                                                      .green[700],
+                                        ),
+                                        const SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          course.isPremium
+                                              ? 'Premium'
+                                              : 'Free',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color:
+                                                course.isPremium
+                                                    ? Colors
+                                                        .amber[700]
+                                                    : Colors
+                                                        .green[700],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
         ),
       ),
     );

@@ -6,9 +6,9 @@ import "package:english_app_with_ai/models/course_response_model.dart";
 import "package:english_app_with_ai/models/login_request.dart";
 import "package:english_app_with_ai/models/login_response.dart";
 import "package:english_app_with_ai/models/query_model.dart";
-import "package:english_app_with_ai/models/response_model.dart";
 import "package:http/http.dart" as http;
 
+import "../../models/response_model.dart";
 import "../../models/user_model.dart";
 import "../../utils/decode_token.dart";
 import "../abstract/i_api_service.dart";
@@ -233,6 +233,75 @@ class ApiService implements IApiService {
       return null;
     } catch (e) {
       throw Exception('Failed to load course: $e');
+    }
+  }
+
+  @override
+  Future<String?> createOrder() async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.createOrderEndpoint}/$userId',
+    );
+    try {
+      final response = await http.post(url);
+      if (response.statusCode == 201 ||
+          response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return jsonData['result'];
+      }
+      throw Exception('Create order failed');
+    } catch (e) {
+      throw Exception('Failed to create order: $e');
+    }
+  }
+
+  @override
+  Future<String?> createPayment(
+    String orderId,
+    String paymentMethod,
+  ) async {
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.createPaymentEndpoint}',
+    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'orderId': orderId,
+          'paymentMethod': paymentMethod,
+        }),
+      );
+      if (response.statusCode == 201 ||
+          response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return jsonData['result'];
+      }
+      throw Exception('Create payment failed');
+    } catch (e) {
+      throw Exception('Failed to create payment: $e');
+    }
+  }
+
+  @override
+  Future<bool> confirmPayment(String orderId) async {
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.confirmPaymentEndpoint}/$orderId',
+    );
+    try {
+      final response = await http.post(url);
+      if (response.statusCode == 200 ||
+          response.statusCode == 201) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData["isSuccess"] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      throw Exception('Failed to confirm payment: $e');
     }
   }
 }

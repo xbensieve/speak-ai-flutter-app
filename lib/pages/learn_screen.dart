@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:english_app_with_ai/pages/topic_progress_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -124,7 +125,11 @@ class _LearnScreenState extends State<LearnScreen> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Get.to(
+                    () => TopicsScreen(courseId: course.id),
+                  );
+                },
               ),
             );
           },

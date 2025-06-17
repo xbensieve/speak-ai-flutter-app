@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:english_app_with_ai/config/api_configuration.dart";
+import "package:english_app_with_ai/models/api_response_model.dart";
 import "package:english_app_with_ai/models/course_model.dart";
 import "package:english_app_with_ai/models/course_response_model.dart";
 import "package:english_app_with_ai/models/enrolled_course_model.dart";
@@ -85,6 +86,7 @@ class ApiService implements IApiService {
     final tokenData = getDecodedAccessToken();
     if (tokenData == null) throw Exception('Invalid token');
     String? userId = tokenData['Id'];
+    print(userId);
     final url = Uri.parse(
       '${ApiConfig.baseUrl}${ApiConfig.userInfoEndpoint}/$userId',
     );
@@ -382,6 +384,35 @@ class ApiService implements IApiService {
       );
     } catch (e) {
       throw Exception('Failed to get enrolled courses: $e');
+    }
+  }
+
+  @override
+  Future<ApiResponse> getEnrolledCourseTopics(
+    String courseId,
+  ) async {
+    var enrolledCourseId = await checkEnrolledCourse(
+      courseId,
+    );
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.getEnrolledCourseTopicEndpoint}$enrolledCourseId',
+    );
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData =
+            jsonDecode(response.body)
+                as Map<String, dynamic>;
+        return ApiResponse.fromJson(jsonData);
+      } else {
+        throw Exception(
+          'Failed to fetch enrollment: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception(
+        'Failed to get enrolled course topics: $e',
+      );
     }
   }
 }

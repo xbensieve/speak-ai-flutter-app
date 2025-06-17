@@ -1,3 +1,4 @@
+import "package:english_app_with_ai/models/api_response_model.dart";
 import "package:english_app_with_ai/models/course_model.dart";
 import "package:english_app_with_ai/models/course_response_model.dart";
 import "package:english_app_with_ai/models/enrolled_course_model.dart";
@@ -40,6 +41,10 @@ abstract class IApiService {
 
   Future<ResponseModel<List<EnrolledCourseModel>>>
   getEnrolledCourses();
+
+  Future<ApiResponse> getEnrolledCourseTopics(
+    String courseId,
+  );
 
   Future<String?> createOrder();
 

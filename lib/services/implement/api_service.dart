@@ -10,6 +10,7 @@ import "package:english_app_with_ai/models/login_response.dart";
 import "package:english_app_with_ai/models/query_model.dart";
 import "package:http/http.dart" as http;
 
+import "../../models/course_detail_model.dart";
 import "../../models/response_model.dart";
 import "../../models/user_model.dart";
 import "../../utils/decode_token.dart";
@@ -215,22 +216,22 @@ class ApiService implements IApiService {
   }
 
   @override
-  Future<ResponseModel<CourseModel>?> getCourseById(
+  Future<ResponseModel<CourseResult>?> getCourseById(
     String courseId,
   ) async {
     if (courseId == null) {
       throw Exception("CourseId cannot null");
     }
     final url = Uri.parse(
-      '${ApiConfig.baseUrl}${ApiConfig.getCourseByIdEndpoint}$courseId',
+      '${ApiConfig.baseUrl}${ApiConfig.getCourseByIdEndpoint}$courseId/details',
     );
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        return ResponseModel<CourseModel>.fromJson(
+        return ResponseModel<CourseResult>.fromJson(
           jsonData,
-          (data) => CourseModel.fromJson(data),
+          (json) => CourseResult.fromJson(json),
         );
       }
       return null;

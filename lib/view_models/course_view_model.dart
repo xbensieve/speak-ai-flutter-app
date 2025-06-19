@@ -1,4 +1,4 @@
-import 'package:english_app_with_ai/models/enrolled_course_model.dart';
+import 'package:english_app_with_ai/models/course_detail_model.dart';
 import 'package:english_app_with_ai/services/abstract/i_api_service.dart';
 import 'package:get/get.dart';
 
@@ -12,7 +12,7 @@ class CourseViewModel extends GetxController {
   var courses = <CourseModel>[].obs;
   var isLoading = false.obs;
   var error = ''.obs;
-  var selectedCourse = Rxn<CourseModel>();
+  var selectedCourse = Rxn<CourseResult>();
   var enrollmentStatus = Rxn<String?>();
   var enrolledCourses = <CourseModel>[].obs;
 
@@ -105,79 +105,5 @@ class CourseViewModel extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<List<EnrolledCourseModel>>
-  getEnrolledCourses() async {
-    isLoading.value = true;
-    error.value = '';
-    try {
-      final response =
-          await apiService.getEnrolledCourses();
-      return response.result;
-    } catch (e) {
-      error.value = 'Failed to get enrolled courses: $e';
-      rethrow;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> fetchAllEnrolledCourseDetails() async {
-    if (isLoading.value) return;
-
-    isLoading.value = true;
-    error.value = '';
-    _retryCount = 0;
-
-    while (_retryCount < _maxRetries) {
-      try {
-        final enrolledList =
-            await apiService.getEnrolledCourses();
-        final courseList = <CourseModel>[];
-
-        await Future.wait(
-          enrolledList.result.map((enrolled) async {
-            try {
-              final courseResponse = await apiService
-                  .getCourseById(enrolled.courseId);
-              if (courseResponse?.result != null) {
-                courseList.add(courseResponse!.result!);
-              }
-            } catch (e) {
-              print(
-                'Error fetching course ${enrolled.courseId}: $e',
-              );
-            }
-          }),
-          eagerError: true,
-        );
-
-        enrolledCourses.assignAll(courseList);
-        break; // Exit loop on success
-      } catch (e) {
-        _retryCount++;
-        if (_retryCount == _maxRetries) {
-          error.value = _handleNetworkError(e);
-        }
-        await Future.delayed(
-          Duration(seconds: _retryCount),
-        ); // Exponential backoff
-      }
-    }
-
-    if (_retryCount == _maxRetries) {
-      error.value =
-          'Failed to load enrolled courses after $_maxRetries attempts';
-    }
-
-    isLoading.value = false;
-  }
-
-  String _handleNetworkError(dynamic e) {
-    if (e.toString().contains('Connection reset by peer')) {
-      return 'Network connection failed. Please check your internet connection and try again.';
-    }
-    return 'An error occurred: $e';
   }
 }

@@ -29,7 +29,7 @@ class CourseDetailPage extends StatelessWidget {
     final CourseViewModel viewModel = Get.put(
       CourseViewModel(),
     );
-
+    print(courseId);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.fetchCourseById(courseId);
       viewModel.checkEnrolledCourse(courseId);
@@ -99,7 +99,7 @@ class CourseDetailPage extends StatelessWidget {
                     ),
                   ),
                   background: CachedNetworkImage(
-                    imageUrl: course.imageUrl,
+                    imageUrl: course.imgUrl,
                     fit: BoxFit.cover,
                     placeholder:
                         (context, url) => const Center(

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../view_models/topics_progress_vm.dart';
+import 'course_content_screen.dart';
 
 class TopicsScreen extends StatelessWidget {
   final String enrolledCourseId;
@@ -18,7 +19,6 @@ class TopicsScreen extends StatelessWidget {
     final TopicProgressVM viewModel = Get.put(
       TopicProgressVM(),
     );
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.fetchTopics(enrolledCourseId);
     });
@@ -142,17 +142,11 @@ class TopicsScreen extends StatelessWidget {
                   final topic = viewModel.topics[index];
                   return GestureDetector(
                     onTap: () {
-                      Get.snackbar(
-                        'Topic',
-                        'Tapped on ${topic.topicName}',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor:
-                            Colors.blueGrey.shade800,
-                        colorText: Colors.white,
-                        margin: const EdgeInsets.all(16),
-                        borderRadius: 12,
-                        duration: const Duration(
-                          seconds: 2,
+                      Get.to(
+                        () => CourseContentScreen(
+                          courseId:
+                              viewModel.courseId.value,
+                          topicId: topic.id,
                         ),
                       );
                     },

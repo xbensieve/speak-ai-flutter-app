@@ -10,6 +10,7 @@ class TopicProgressVM extends GetxController {
   RxList<Topic> topics = <Topic>[].obs;
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
+  final RxString courseId = ''.obs;
 
   Future<void> fetchTopics(String enrolledCourseId) async {
     isLoading.value = true;
@@ -17,6 +18,7 @@ class TopicProgressVM extends GetxController {
     try {
       final response = await apiService
           .getEnrolledCourseTopics(enrolledCourseId);
+      courseId.value = response.result!.course!.id;
       topics.assignAll(response.result!.topics);
       isLoading.value = false;
     } catch (e) {

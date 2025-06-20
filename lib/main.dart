@@ -1,4 +1,6 @@
 import 'package:english_app_with_ai/pages/splash_screen.dart';
+import 'package:english_app_with_ai/services/abstract/i_course_service.dart';
+import 'package:english_app_with_ai/services/implement/course_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ void main() async {
   await dotenv.load();
   await GetStorage.init();
   Get.put(NavigationController());
+  Get.put<ICourseService>(CourseService());
   runApp(const MyApp());
 }
 

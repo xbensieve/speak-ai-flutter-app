@@ -11,13 +11,13 @@ class TopicProgressVM extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  Future<void> fetchTopics(String courseId) async {
+  Future<void> fetchTopics(String enrolledCourseId) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       final response = await apiService
-          .getEnrolledCourseTopics(courseId);
-      topics.assignAll(response.result.topics);
+          .getEnrolledCourseTopics(enrolledCourseId);
+      topics.assignAll(response.result!.topics);
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;

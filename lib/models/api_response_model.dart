@@ -2,13 +2,13 @@ class ApiResponse {
   final int statusCode;
   final String message;
   final bool isSuccess;
-  final Result result;
+  final Result? result;
 
   ApiResponse({
     required this.statusCode,
     required this.message,
     required this.isSuccess,
-    required this.result,
+    this.result,
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
@@ -16,9 +16,12 @@ class ApiResponse {
       statusCode: json['statusCode'] as int,
       message: json['message'] as String,
       isSuccess: json['isSuccess'] as bool,
-      result: Result.fromJson(
-        json['result'] as Map<String, dynamic>,
-      ),
+      result:
+          json['result'] != null
+              ? Result.fromJson(
+                json['result'] as Map<String, dynamic>,
+              )
+              : null,
     );
   }
 
@@ -27,31 +30,36 @@ class ApiResponse {
       'statusCode': statusCode,
       'message': message,
       'isSuccess': isSuccess,
-      'result': result.toJson(),
+      'result': result?.toJson(),
     };
   }
 }
 
 class Result {
-  final Course course;
+  final Course? course;
   final int progress;
   final List<Topic> topics;
 
   Result({
-    required this.course,
+    this.course,
     required this.progress,
     required this.topics,
   });
 
   factory Result.fromJson(Map<String, dynamic> json) {
     return Result(
-      course: Course.fromJson(
-        json['course'] as Map<String, dynamic>,
-      ),
+      course:
+          json['course'] != null
+              ? Course.fromJson(
+                json['course'] as Map<String, dynamic>,
+              )
+              : null,
       progress:
           (json['progress'] is int)
               ? json['progress'] as int
-              : (json['progress'] as double).toInt(),
+              : (json['progress'] is double)
+              ? (json['progress'] as double).toInt()
+              : 0,
       topics:
           (json['topics'] as List<dynamic>?)
               ?.map(
@@ -66,7 +74,7 @@ class Result {
 
   Map<String, dynamic> toJson() {
     return {
-      'course': course.toJson(),
+      'course': course?.toJson(),
       'progress': progress,
       'topics': topics.map((e) => e.toJson()).toList(),
     };
@@ -77,7 +85,7 @@ class Course {
   final String id;
   final String courseName;
   final String description;
-  final int maxPoint;
+  final double maxPoint;
   final bool isPremium;
   final bool isActive;
   final int levelId;
@@ -102,15 +110,17 @@ class Course {
       courseName: json['courseName'] as String,
       description: json['description'] as String,
       maxPoint:
-          (json['maxPoint'] is int)
-              ? json['maxPoint'] as int
-              : (json['maxPoint'] as double).toInt(),
+          (json['maxPoint'] is num)
+              ? (json['maxPoint'] as num).toDouble()
+              : 0.0,
       isPremium: json['isPremium'] as bool,
       isActive: json['isActive'] as bool,
       levelId:
           (json['levelId'] is int)
               ? json['levelId'] as int
-              : (json['levelId'] as double).toInt(),
+              : (json['levelId'] is double)
+              ? (json['levelId'] as double).toInt()
+              : 0,
       imgUrl: json['imgUrl'] as String?,
       topics: json['topics'] as List<dynamic>?,
     );
@@ -133,7 +143,7 @@ class Course {
 
 class Topic {
   final String id;
-  final int progress;
+  final double progress; // Changed to double
   final bool isCompleted;
   final String enrolledCourseId;
   final String topicName;
@@ -150,9 +160,11 @@ class Topic {
     return Topic(
       id: json['id'] as String,
       progress:
-          (json['progress'] is int)
-              ? json['progress'] as int
-              : (json['progress'] as double).toInt(),
+          (json['progress']
+                  is num) // Accept both int and double
+              ? (json['progress'] as num).toDouble()
+              : 0.0,
+      // Default to 0.0 if null or invalid
       isCompleted: json['isCompleted'] as bool,
       enrolledCourseId: json['enrolledCourseId'] as String,
       topicName: json['topicName'] as String,

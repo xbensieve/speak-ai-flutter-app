@@ -4,7 +4,7 @@ import "package:english_app_with_ai/config/api_configuration.dart";
 import "package:english_app_with_ai/models/api_response_model.dart";
 import "package:english_app_with_ai/models/course_model.dart";
 import "package:english_app_with_ai/models/course_response_model.dart";
-import "package:english_app_with_ai/models/enrolled_course_model.dart";
+import "package:english_app_with_ai/models/enrolled_course.dart";
 import "package:english_app_with_ai/models/login_request.dart";
 import "package:english_app_with_ai/models/login_response.dart";
 import "package:english_app_with_ai/models/query_model.dart";
@@ -390,11 +390,8 @@ class ApiService implements IApiService {
 
   @override
   Future<ApiResponse> getEnrolledCourseTopics(
-    String courseId,
+    String enrolledCourseId,
   ) async {
-    var enrolledCourseId = await checkEnrolledCourse(
-      courseId,
-    );
     final url = Uri.parse(
       '${ApiConfig.baseUrl}${ApiConfig.getEnrolledCourseTopicEndpoint}$enrolledCourseId',
     );
@@ -404,6 +401,7 @@ class ApiService implements IApiService {
         final jsonData =
             jsonDecode(response.body)
                 as Map<String, dynamic>;
+        print(jsonData);
         return ApiResponse.fromJson(jsonData);
       } else {
         throw Exception(

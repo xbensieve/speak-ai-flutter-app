@@ -1,7 +1,7 @@
 import "package:english_app_with_ai/models/api_response_model.dart";
 import "package:english_app_with_ai/models/course_model.dart";
 import "package:english_app_with_ai/models/course_response_model.dart";
-import "package:english_app_with_ai/models/enrolled_course_model.dart";
+import "package:english_app_with_ai/models/enrolled_course.dart";
 import "package:english_app_with_ai/models/login_request.dart";
 import "package:english_app_with_ai/models/login_response.dart";
 import "package:english_app_with_ai/models/response_model.dart";

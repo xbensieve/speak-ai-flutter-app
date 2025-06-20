@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:english_app_with_ai/pages/topic_progress_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -283,11 +284,10 @@ class CourseDetailPage extends StatelessWidget {
           ),
           onPressed: () async {
             if (isEnrolled) {
-              Get.snackbar(
-                'Action',
-                'Continuing to learn...',
-                backgroundColor: Colors.green.withOpacity(
-                  0.8,
+              Get.to(
+                () => TopicsScreen(
+                  enrolledCourseId:
+                      viewModel.enrollmentStatus.value!,
                 ),
               );
             } else {

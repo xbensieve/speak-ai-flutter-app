@@ -135,18 +135,15 @@ class CourseScreen extends StatelessWidget {
                       bottom: 12,
                     ),
                     child: Card(
-                      elevation: 4,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                           12,
                         ),
                       ),
-                      color: Colors.white,
+                      color: Colors.transparent,
                       // Card remains white for contrast
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ),
                         onTap: () {
                           Get.to(
                             () => CourseDetailPage(
@@ -219,14 +216,16 @@ class CourseScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       course.courseName,
-                                      style: GoogleFonts.poppins(
-                                        fontWeight:
-                                            FontWeight.w600,
-                                        fontSize: 16,
-                                        color:
-                                            Colors
-                                                .blue[900],
-                                      ),
+                                      style:
+                                          GoogleFonts.poppins(
+                                            fontWeight:
+                                                FontWeight
+                                                    .w600,
+                                            fontSize: 16,
+                                            color:
+                                                Colors
+                                                    .white,
+                                          ),
                                       maxLines: 2,
                                       overflow:
                                           TextOverflow
@@ -255,9 +254,9 @@ class CourseScreen extends StatelessWidget {
                                         style:
                                             GoogleFonts.poppins(
                                               fontSize: 12,
-                                              color: Color(
-                                                0xFF6A89FF,
-                                              ),
+                                              color:
+                                                  Colors
+                                                      .cyan,
                                               fontWeight:
                                                   FontWeight
                                                       .w500,
@@ -280,7 +279,7 @@ class CourseScreen extends StatelessWidget {
                                                   ? Colors
                                                       .amber[700]
                                                   : Colors
-                                                      .green[700],
+                                                      .greenAccent,
                                         ),
                                         const SizedBox(
                                           width: 4,
@@ -296,7 +295,7 @@ class CourseScreen extends StatelessWidget {
                                                     ? Colors
                                                         .amber[700]
                                                     : Colors
-                                                        .green[700],
+                                                        .greenAccent,
                                           ),
                                         ),
                                       ],

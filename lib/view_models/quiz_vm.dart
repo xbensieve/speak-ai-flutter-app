@@ -2,6 +2,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:english_app_with_ai/models/course_content_model.dart';
 import 'package:get/get.dart';
 
+import '../services/abstract/i_course_service.dart';
+
 class QuizViewModel extends GetxController {
   final Exercise exercise;
   final String courseId;
@@ -14,8 +16,11 @@ class QuizViewModel extends GetxController {
   final RxInt score = 0.obs;
   final RxBool isAnswerCorrect = false.obs;
   final RxBool showFeedback = false.obs;
+  final ICourseService _courseService =
+      Get.find<ICourseService>();
 
   late final AudioPlayer _audioPlayer;
+  final RxString submissionResponse = ''.obs;
 
   QuizViewModel({
     required this.exercise,
@@ -42,13 +47,13 @@ class QuizViewModel extends GetxController {
 
     _playAudio(
       isAnswerCorrect.value
-          ? 'correct.mp3'
-          : 'incorrect.mp3',
+          ? 'correct.wav'
+          : 'incorrect.wav',
     );
     showFeedbackPopup();
   }
 
-  void nextQuestion() {
+  void nextQuestion() async {
     if (isAnswerCorrect.value &&
         currentQuestionIndex.value <
             exercise.questions.length - 1) {
@@ -64,22 +69,52 @@ class QuizViewModel extends GetxController {
       selectedAnswer.value = '';
       isAnswerCorrect.value = false;
       showFeedback.value = false;
+      await _submitQuizResults();
+    }
+  }
+
+  Future<void> _submitQuizResults() async {
+    isLoading.value = true;
+    try {
+      final response = await _courseService.submitAnswer(
+        exercise.id,
+        exercise.maxPoint,
+      );
+      submissionResponse.value =
+          'Submission successful! Score: ${score.value}/${exercise.questions.length}';
+    } catch (e) {
+      submissionResponse.value = 'Failed to submit: $e';
+    } finally {
+      isLoading.value = false;
     }
   }
 
   void showFeedbackPopup() {
     showFeedback.value = true;
     Future.delayed(const Duration(seconds: 2), () {
-      showFeedback.value = false;
+      if (isAnswerCorrect.value) {
+        nextQuestion();
+      } else {
+        showFeedback.value = false;
+      }
     });
+  }
+
+  void resetQuiz() {
+    currentQuestionIndex.value = 0;
+    score.value = 0;
+    selectedAnswer.value = '';
+    isAnswerCorrect.value = false;
+    showFeedback.value = false;
+    errorMessage.value = '';
+    submissionResponse.value = '';
   }
 
   Future<void> _playAudio(String path) async {
     try {
-      print('Playing audio: $path');
       await _audioPlayer.play(AssetSource(path));
     } catch (e) {
-      print('Error playing audio: $e');
+      throw Exception('Error playing audio: $e');
     }
   }
 }

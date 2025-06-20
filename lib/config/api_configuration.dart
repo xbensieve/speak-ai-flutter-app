@@ -16,6 +16,8 @@ class ApiConfig {
   static const String enrollCourseEndpoint = '/api/courses';
   static const String getEnrolledCourseTopicEndpoint =
       '/api/courses/enrollments/';
+  static const String submitAnswerEndpoint =
+      '/api/courses/exercises/';
   static const String getEnrolledCoursesEndpoint =
       '/api/courses/user';
   static const String createOrderEndpoint =

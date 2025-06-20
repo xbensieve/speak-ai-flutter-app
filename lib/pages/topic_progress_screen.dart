@@ -10,9 +10,9 @@ class TopicsScreen extends StatelessWidget {
   final String enrolledCourseId;
 
   const TopicsScreen({
-    Key? key,
+    super.key,
     required this.enrolledCourseId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +26,10 @@ class TopicsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Course Topics',
+          'Topics',
           style: GoogleFonts.roboto(
             fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: 26,
             color: Colors.white,
           ),
         ),
@@ -59,7 +59,7 @@ class TopicsScreen extends StatelessWidget {
                 () =>
                     viewModel.fetchTopics(enrolledCourseId),
             color: Colors.white,
-            backgroundColor: Colors.blueGrey.shade900,
+            backgroundColor: Colors.white10,
             child: Obx(() {
               if (viewModel.isLoading.value) {
                 return const Center(
@@ -158,16 +158,15 @@ class TopicsScreen extends StatelessWidget {
                             ).size.height *
                             0.012,
                       ),
-                      color: Colors.blueGrey.shade900
-                          .withOpacity(0.9),
+                      color: Colors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          16,
+                          12,
                         ),
-                      ),
-                      elevation: 6,
-                      shadowColor: Colors.black.withOpacity(
-                        0.3,
+                        side: BorderSide(
+                          color: Colors.white70,
+                          width: 1,
+                        ),
                       ),
                       child: ListTile(
                         contentPadding:
@@ -185,7 +184,7 @@ class TopicsScreen extends StatelessWidget {
                             ),
                         title: Text(
                           topic.topicName,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.roboto(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize:
@@ -201,7 +200,7 @@ class TopicsScreen extends StatelessWidget {
                           children: [
                             const SizedBox(height: 4),
                             Text(
-                              'Progress: ${topic.progress}%',
+                              'Progress: ${topic.progress}',
                               style: GoogleFonts.poppins(
                                 color: Colors.white70,
                                 fontSize:
@@ -217,7 +216,7 @@ class TopicsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             LinearProgressIndicator(
-                              value: topic.progress / 100,
+                              value: topic.progress,
                               backgroundColor:
                                   Colors.blueGrey.shade700,
                               valueColor:

@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -135,11 +137,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const HeaderWidget(),
                       SizedBox(height: size.height * 0.03),
-                      Image.asset(
-                        'lib/assets/animations/zebra-animation.gif',
+                      CachedNetworkImage(
+                        imageUrl:
+                            'https://media.tenor.com/sLkOvbmv4SgAAAAi/tkthao219-bunny.gif',
+                        // Sample GIF URL
                         width: size.width * 0.5,
                         height: size.height * 0.25,
                         fit: BoxFit.contain,
+                        placeholder:
+                            (context, url) => const Center(
+                              child:
+                                  CupertinoActivityIndicator(
+                                    color: Colors.white,
+                                    radius: 20,
+                                  ),
+                            ),
+                        errorWidget:
+                            (context, url, error) =>
+                                Container(
+                                  color: Colors.grey[800],
+                                  child: const Icon(
+                                    Icons.error,
+                                    color: Colors.white,
+                                  ),
+                                ),
                       ),
                       SizedBox(height: size.height * 0.04),
                       Column(

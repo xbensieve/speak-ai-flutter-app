@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:english_app_with_ai/pages/topic_progress_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../view_models/course_view_model.dart';
 
@@ -30,7 +33,6 @@ class CourseDetailPage extends StatelessWidget {
     final CourseViewModel viewModel = Get.put(
       CourseViewModel(),
     );
-    print(courseId);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.fetchCourseById(courseId);
       viewModel.checkEnrolledCourse(courseId);
@@ -92,39 +94,57 @@ class CourseDetailPage extends StatelessWidget {
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     course.courseName,
-                    style: const TextStyle(
+                    style: GoogleFonts.roboto(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
                       fontSize: 20,
                     ),
                   ),
-                  background: CachedNetworkImage(
-                    imageUrl: course.imgUrl,
-                    fit: BoxFit.cover,
-                    placeholder:
-                        (context, url) => const Center(
-                          child: CupertinoActivityIndicator(
-                            color: Colors.white,
-                            radius: 20,
-                          ),
+                  background: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: course.imgUrl,
+                        fit: BoxFit.cover,
+                        placeholder:
+                            (context, url) => const Center(
+                              child:
+                                  CupertinoActivityIndicator(
+                                    color: Colors.white,
+                                    radius: 20,
+                                  ),
+                            ),
+                        errorWidget:
+                            (context, url, error) =>
+                                Container(
+                                  color: Colors.grey[800],
+                                  child: const Icon(
+                                    Icons.error,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                      ),
+                      BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 5,
+                          sigmaY: 5,
                         ),
-                    errorWidget:
-                        (context, url, error) => Container(
-                          color: Colors.grey[800],
-                          child: const Icon(
-                            Icons.error,
-                            color: Colors.white,
-                          ),
+                        child: Container(
+                          color: Colors.black.withOpacity(
+                            0.3,
+                          ), // Darkens the blurred image for better text contrast
                         ),
+                      ),
+                    ],
                   ),
                 ),
                 leading: IconButton(
                   icon: const Icon(
-                    Icons.arrow_back_ios,
+                    Icons.arrow_back_ios_new,
                     color: Colors.white,
+                    size: 22,
                   ),
-                  onPressed: () => Get.back(),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
               SliverToBoxAdapter(
@@ -168,8 +188,6 @@ class CourseDetailPage extends StatelessWidget {
                                   fontSize: 14,
                                   color: Colors.white70,
                                 ),
-                                textAlign:
-                                    TextAlign.justify,
                               ),
                             ],
                           ),

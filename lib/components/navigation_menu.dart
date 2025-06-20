@@ -1,5 +1,6 @@
 import 'package:english_app_with_ai/pages/course_screen.dart';
 import 'package:english_app_with_ai/pages/home_screen.dart';
+import 'package:english_app_with_ai/pages/learn_screen.dart';
 import 'package:english_app_with_ai/pages/profile_screen.dart';
 import 'package:english_app_with_ai/pages/role_play_screen.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +133,7 @@ class NavigationController extends GetxController {
       case 1:
         return const CourseScreen();
       case 2:
-        return const HomeScreen();
+        return const LearnScreen();
       case 3:
         return const RolePlayScreen();
       case 4:

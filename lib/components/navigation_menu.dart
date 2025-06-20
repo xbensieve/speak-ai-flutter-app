@@ -98,8 +98,10 @@ class NavigationMenu extends StatelessWidget {
                 label: 'Courses',
               ),
               NavigationDestination(
-                icon: Icon(Icons.leaderboard_outlined),
-                selectedIcon: Icon(Icons.leaderboard),
+                icon: Icon(
+                  Icons.laptop_chromebook_outlined,
+                ),
+                selectedIcon: Icon(Icons.laptop_chromebook),
                 label: 'Learn',
               ),
               NavigationDestination(

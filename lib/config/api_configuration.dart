@@ -3,6 +3,10 @@ class ApiConfig {
   static const String loginEndpoint = '/api/auth/login';
   static const String registerCustomerEndpoint =
       '/api/auth/register/customer';
+  static const String confirmOtpEndpoint =
+      '/api/auth/verify/otp';
+  static const String confirmEmailEndpoint =
+      '/api/emails/verify';
   static const String loginGoogleEndpoint =
       '/api/auth/signin-google';
   static const String userInfoEndpoint = '/api/users';

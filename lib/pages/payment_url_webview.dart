@@ -39,9 +39,13 @@ class _PaymentWebViewState extends State<PaymentWebView> {
                 final uri = Uri.parse(url);
                 final code = uri.queryParameters['code'];
                 final id = uri.queryParameters['id'];
-
+                final orderCode =
+                    uri.queryParameters['orderCode'];
                 if (code == '00' && id != null) {
-                  debugPrint('Extracted ID: $url');
+                  _paymentViewModel.handlePaymentResponse(
+                    id,
+                    orderCode!,
+                  );
                   _paymentViewModel.handlePaymentSuccess(
                     id,
                   );

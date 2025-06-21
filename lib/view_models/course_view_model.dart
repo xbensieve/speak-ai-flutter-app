@@ -15,12 +15,18 @@ class CourseViewModel extends GetxController {
   var selectedCourse = Rxn<CourseResult>();
   var enrollmentStatus = Rxn<String?>();
   var enrolledCourses = <CourseModel>[].obs;
-
   final query = QueryModel(pageNumber: 1, pageSize: 10);
-  int _retryCount = 0;
-  static const int _maxRetries = 3;
+  var isPremium = false.obs;
 
-  void fetchCourses() async {
+  @override
+  void onInit() {
+    super.onInit();
+    print('CourseViewModel onInit called');
+    fetchCourses();
+    checkPremium();
+  }
+
+  Future<void> fetchCourses() async {
     isLoading.value = true;
     error.value = '';
 
@@ -104,6 +110,16 @@ class CourseViewModel extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> checkPremium() async {
+    try {
+      final response = await apiService.checkPremium();
+      isPremium.value = response;
+    } catch (e) {
+      error.value = 'Failed to check premium: $e';
+      isPremium.value = false;
     }
   }
 }

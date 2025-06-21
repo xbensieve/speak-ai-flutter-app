@@ -44,6 +44,8 @@ abstract class IApiService {
 
   Future<bool> enrollCourse(String courseId);
 
+  Future<bool> checkPremium();
+
   Future<ResponseModel<List<EnrolledCourseModel>>>
   getEnrolledCourses();
 
@@ -56,6 +58,11 @@ abstract class IApiService {
   Future<String?> createPayment(
     String orderId,
     String paymentMethod,
+  );
+
+  Future<bool> handlePaymentResponse(
+    String transactionInfo,
+    String transactionNumber,
   );
 
   Future<bool> confirmPayment(String orderId);

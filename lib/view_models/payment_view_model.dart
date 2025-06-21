@@ -50,6 +50,7 @@ class PaymentViewModel extends GetxController {
     try {
       isLoading.value = true;
       final result = await confirmPayment();
+
       if (result) {
         Get.offAll(() => NavigationMenu());
       } else {
@@ -78,6 +79,25 @@ class PaymentViewModel extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to confirm payment: $e',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> handlePaymentResponse(
+    String transactionInfo,
+    String transactionNumber,
+  ) async {
+    try {
+      final result = await apiService.handlePaymentResponse(
+        transactionInfo,
+        transactionNumber,
+      );
+      return result;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to handle payment response: $e',
       );
       return false;
     }

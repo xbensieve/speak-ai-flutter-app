@@ -24,10 +24,14 @@ class ApiConfig {
       '/api/courses/exercises/';
   static const String getEnrolledCoursesEndpoint =
       '/api/courses/user';
+  static const String checkPremiumEndpoint =
+      '/api/premium/check-access';
   static const String createOrderEndpoint =
       '/api/premium/upgrade';
   static const String createPaymentEndpoint =
       '/api/payments/requests';
+  static const String handlePaymentResponseEndpoint =
+      '/api/payments/handle-response';
   static const String confirmPaymentEndpoint =
       '/api/premium/confirm-upgrade';
 }

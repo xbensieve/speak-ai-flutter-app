@@ -1,3 +1,4 @@
+import 'package:english_app_with_ai/pages/premium_intro_screen.dart';
 import 'package:english_app_with_ai/view_models/course_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,49 @@ class CourseScreen extends StatelessWidget {
     return levelMap[levelId] ?? 'Unknown';
   }
 
+  void _showPremiumRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Premium Required',
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            content: Text(
+              'This course is only available for premium users. Please upgrade your account to access it.',
+              style: GoogleFonts.roboto(fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.roboto(
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.to(() => PremiumIntroPage());
+                },
+                child: Text(
+                  'Upgrade Now',
+                  style: GoogleFonts.roboto(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final CourseViewModel courseViewModel = Get.put(
@@ -29,6 +73,7 @@ class CourseScreen extends StatelessWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       courseViewModel.fetchCourses();
+      courseViewModel.checkPremium();
     });
 
     return Scaffold(
@@ -51,8 +96,10 @@ class CourseScreen extends StatelessWidget {
             MediaQuery.of(context).size.width * 0.04,
           ),
           child: RefreshIndicator(
-            onRefresh:
-                () async => courseViewModel.fetchCourses(),
+            onRefresh: () async {
+              await courseViewModel.fetchCourses();
+              await courseViewModel.checkPremium();
+            },
             child: Obx(() {
               if (courseViewModel.isLoading.value) {
                 return const Center(
@@ -145,11 +192,20 @@ class CourseScreen extends StatelessWidget {
                       // Card remains white for contrast
                       child: InkWell(
                         onTap: () {
-                          Get.to(
-                            () => CourseDetailPage(
-                              courseId: course.id,
-                            ),
-                          );
+                          if (course.isPremium &&
+                              !courseViewModel
+                                  .isPremium
+                                  .value) {
+                            _showPremiumRequiredDialog(
+                              context,
+                            );
+                          } else {
+                            Get.to(
+                              () => CourseDetailPage(
+                                courseId: course.id,
+                              ),
+                            );
+                          }
                         },
                         child: Row(
                           children: [

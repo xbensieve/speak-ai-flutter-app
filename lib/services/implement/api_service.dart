@@ -306,6 +306,44 @@ class ApiService implements IApiService {
   }
 
   @override
+  Future<bool> handlePaymentResponse(
+    String transactionInfo,
+    String transactionNumber,
+  ) async {
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.handlePaymentResponseEndpoint}',
+    );
+    try {
+      final tokenData = getDecodedAccessToken();
+      if (tokenData == null) {
+        throw Exception('Invalid token');
+      }
+      String? userId = tokenData['Id'];
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'userId': userId,
+          'transactionInfo': transactionInfo,
+          'transactionNumber': transactionNumber,
+          'isSuccess': true,
+        }),
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData["isSuccess"] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      throw Exception(
+        'Failed to handle payment response: $e',
+      );
+    }
+  }
+
+  @override
   Future<String?> checkEnrolledCourse(
     String courseId,
   ) async {
@@ -444,6 +482,26 @@ class ApiService implements IApiService {
       );
     } catch (e) {
       throw Exception('Failed to send OTP: $e');
+    }
+  }
+
+  @override
+  Future<bool> checkPremium() async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.checkPremiumEndpoint}/$userId',
+    );
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return jsonData['hasPremiumAccess'];
+      }
+      return false;
+    } catch (e) {
+      throw Exception('Failed to check premium: $e');
     }
   }
 }

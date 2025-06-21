@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../view_models/payment_view_model.dart';
+import 'otp_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -125,7 +126,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double screenWidth,
     double screenHeight,
   ) {
-    final now = DateTime(2025, 5, 31);
+    final now = DateTime(
+      2025,
+      6,
+      21,
+      18,
+      10,
+    ); // Updated to current date and time: 06:10 PM +07
     final daysRemaining =
         user.premiumExpiredTime?.difference(now).inDays;
     final size = MediaQuery.of(context).size;
@@ -173,13 +180,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: screenHeight * 0.015),
-                    Text(
-                      user.userName,
-                      style: GoogleFonts.roboto(
-                        fontSize: screenWidth * 0.0625,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          user.userName,
+                          style: GoogleFonts.roboto(
+                            fontSize: screenWidth * 0.0625,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (user.isVerified)
+                          Icon(
+                            Icons.verified,
+                            color: Colors.green,
+                            size: screenWidth * 0.05,
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -190,36 +209,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: EdgeInsets.all(
                   screenWidth * 0.025,
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(
-                    screenWidth * 0.05,
-                  ),
-                  border: Border.all(
-                    color: Colors.white24,
-                    width: 2,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      child: Text(
-                        daysRemaining != null
-                            ? 'Your plan: $daysRemaining Days'
-                            : 'Your plan: Free',
-                        style: GoogleFonts.roboto(
-                          fontSize: screenWidth * 0.04,
-                          color: Colors.white70,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      daysRemaining != null
+                          ? 'Your plan: $daysRemaining Days'
+                          : 'Your plan: Free',
+                      style: GoogleFonts.roboto(
+                        fontSize: screenWidth * 0.04,
+                        color: Colors.white70,
                       ),
                     ),
+                    SizedBox(height: screenHeight * 0.02),
                     if (!user.isPremium)
-                      _buildGetAccountProButton(
-                        screenWidth,
-                        screenHeight,
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                        ),
+                        child: _buildGetAccountProButton(
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
+                    if (!user.isVerified)
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                        ),
+                        child: _buildVerifyButton(
+                          screenWidth,
+                          screenHeight,
+                        ),
                       ),
                   ],
                 ),
@@ -320,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         elevation: 2,
         minimumSize: Size(
-          screenWidth * 0.3,
+          screenWidth * 2,
           screenHeight * 0.05,
         ),
       ),
@@ -330,6 +352,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: screenWidth * 0.04,
           fontWeight: FontWeight.bold,
           color: Colors.yellow,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVerifyButton(
+    double screenWidth,
+    double screenHeight,
+  ) {
+    return ElevatedButton(
+      onPressed: () {
+        Get.to(() => const OTPScreen());
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.1,
+          vertical: screenHeight * 0.015,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            screenWidth * 0.03,
+          ),
+          side: const BorderSide(
+            color: Colors.blue,
+            width: 1.5,
+          ),
+        ),
+        elevation: 2,
+        minimumSize: Size(
+          screenWidth * 2,
+          screenHeight * 0.05,
+        ),
+      ),
+      child: Text(
+        'Verify Email',
+        style: GoogleFonts.roboto(
+          fontSize: screenWidth * 0.04,
+          fontWeight: FontWeight.bold,
+          color: Colors.blue,
         ),
       ),
     );

@@ -25,6 +25,10 @@ abstract class IApiService {
 
   Future<LoginResponse> loginWithGoogle(String idToken);
 
+  Future<LoginResponse> confirmEmail(String otp);
+
+  Future<LoginResponse> sendOtpToEmail();
+
   Future<ResponseModel<UserModel>> getUserInfo();
 
   Future<ResponseModel<CourseResponseModel<CourseModel>>>

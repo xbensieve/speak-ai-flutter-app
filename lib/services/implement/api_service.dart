@@ -70,13 +70,9 @@ class ApiService implements IApiService {
           'gender': gender,
         }),
       );
-      if (response.statusCode == 200) {
-        return LoginResponse.fromJson(
-          jsonDecode(response.body),
-        );
-      } else {
-        throw Exception('Registration failed');
-      }
+      return LoginResponse.fromJson(
+        jsonDecode(response.body),
+      );
     } catch (e) {
       throw Exception('Registration error: $e');
     }
@@ -412,6 +408,42 @@ class ApiService implements IApiService {
       throw Exception(
         'Failed to get enrolled course topics: $e',
       );
+    }
+  }
+
+  @override
+  Future<LoginResponse> confirmEmail(String otp) async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.confirmOtpEndpoint}?userId=$userId&otpCode=$otp',
+    );
+    try {
+      final response = await http.post(url);
+      return LoginResponse.fromJson(
+        jsonDecode(response.body),
+      );
+    } catch (e) {
+      throw Exception('Failed to confirm email: $e');
+    }
+  }
+
+  @override
+  Future<LoginResponse> sendOtpToEmail() async {
+    final tokenData = getDecodedAccessToken();
+    if (tokenData == null) throw Exception('Invalid token');
+    String? userId = tokenData['Id'];
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}${ApiConfig.confirmEmailEndpoint}?userID=$userId',
+    );
+    try {
+      final response = await http.post(url);
+      return LoginResponse.fromJson(
+        jsonDecode(response.body),
+      );
+    } catch (e) {
+      throw Exception('Failed to send OTP: $e');
     }
   }
 }

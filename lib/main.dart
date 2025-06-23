@@ -1,12 +1,19 @@
 import 'package:english_app_with_ai/pages/splash_screen.dart';
+import 'package:english_app_with_ai/services/abstract/i_course_service.dart';
+import 'package:english_app_with_ai/services/implement/course_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+
 import 'components/navigation_menu.dart';
 
 void main() async {
-  Get.put(NavigationController());
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   await GetStorage.init();
+  Get.put(NavigationController());
+  Get.put<ICourseService>(CourseService());
   runApp(const MyApp());
 }
 
@@ -17,8 +24,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Echo Nexus',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: Colors.transparent,
         useMaterial3: true,
       ),
       home: const SplashScreen(),

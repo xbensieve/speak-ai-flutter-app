@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class MyTextField extends StatelessWidget {
   final controller;
@@ -14,22 +15,38 @@ class MyTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
+        style: GoogleFonts.roboto(
+          color: Colors.white,
+          fontSize: 18,
+        ),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: BorderSide(
+              color: Colors.white38,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(15),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade500),
+            borderSide: BorderSide(
+              color: Colors.white,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(15),
           ),
-          fillColor: Colors.grey.shade200,
+          fillColor: Colors.transparent,
           filled: true,
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey[500]),
+          hintStyle: GoogleFonts.roboto(
+            color: Colors.grey,
+            fontSize: 18,
+          ),
+          contentPadding: EdgeInsets.all(20),
         ),
       ),
     );

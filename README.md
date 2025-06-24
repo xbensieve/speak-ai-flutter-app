@@ -25,8 +25,8 @@ Echo Nexus is a Flutter application designed to help users improve their English
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/xbensieve/english-edu-app.git
-   cd english-edu-app-flutter
+   git clone https://github.com/xbensieve/speak-ai-flutter-app.git
+   cd speak-ai-flutter-app
    ```
 
 2. **Install dependencies:**
